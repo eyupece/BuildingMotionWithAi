@@ -1,6 +1,10 @@
 import type { AvatarStyle, LocationTheme } from './types';
+import { ACTIVE_EVENT } from './events';
 
-export const AVATAR_STYLES: AvatarStyle[] = [
+// The kiosk grids hold 6 cards, so an event's card replaces the last base card.
+const GRID_SIZE = 6;
+
+const BASE_AVATAR_STYLES: AvatarStyle[] = [
   {
     id: 'pixel-hero',
     name: 'Pixel Hero',
@@ -51,7 +55,7 @@ export const AVATAR_STYLES: AvatarStyle[] = [
   },
 ];
 
-export const LOCATION_THEMES: LocationTheme[] = [
+const BASE_LOCATION_THEMES: LocationTheme[] = [
   {
     id: 'lunar-surface',
     name: 'Lunar Surface',
@@ -101,6 +105,14 @@ export const LOCATION_THEMES: LocationTheme[] = [
     previewImage: '/previews/underwater-palace.png',
   },
 ];
+
+export const AVATAR_STYLES: AvatarStyle[] = ACTIVE_EVENT
+  ? [ACTIVE_EVENT.avatarStyle, ...BASE_AVATAR_STYLES].slice(0, GRID_SIZE)
+  : BASE_AVATAR_STYLES;
+
+export const LOCATION_THEMES: LocationTheme[] = ACTIVE_EVENT
+  ? [ACTIVE_EVENT.locationTheme, ...BASE_LOCATION_THEMES].slice(0, GRID_SIZE)
+  : BASE_LOCATION_THEMES;
 
 export const PROCESSING_TIPS = [
   'Powered by Veo 3.1 on Vertex AI',
