@@ -13,6 +13,9 @@ _MOCK_PNG_BYTES = base64.b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
 )
 
+_MODELS = [settings.NANO_BANANA_MODEL, "gemini-3.1-flash-image", "gemini-3.1-flash-image-preview"]
+_MODELS = list(dict.fromkeys(m for m in _MODELS if m))
+
 # Reuse a single genai client (lazy-initialised)
 _client = None
 
@@ -58,35 +61,49 @@ async def generate_avatar_image(frame_bytes: bytes, style_key: str) -> bytes:
 
     t0 = time.perf_counter()
 
-    response = await asyncio.to_thread(
-        client.models.generate_content,
-        model="gemini-3.1-flash-image-preview",
-        contents=[
-            types.Content(
-                role="user",
-                parts=[
-                    image_part,
-                    types.Part.from_text(text=prompt),
-                ],
-            )
-        ],
-        config=types.GenerateContentConfig(
-            temperature=1,
-            top_p=0.95,
-            max_output_tokens=8192,
-            response_modalities=["IMAGE"],
-            safety_settings=[
-                types.SafetySetting(category="HARM_CATEGORY_HATE_SPEECH", threshold="OFF"),
-                types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="OFF"),
-                types.SafetySetting(category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="OFF"),
-                types.SafetySetting(category="HARM_CATEGORY_HARASSMENT", threshold="OFF"),
+    async def _call(model: str):
+        return await asyncio.to_thread(
+            client.models.generate_content,
+            model=model,
+            contents=[
+                types.Content(
+                    role="user",
+                    parts=[
+                        image_part,
+                        types.Part.from_text(text=prompt),
+                    ],
+                )
             ],
-            image_config=types.ImageConfig(
-                aspect_ratio="1:1",
-                output_mime_type="image/png",
+            config=types.GenerateContentConfig(
+                temperature=1,
+                top_p=0.95,
+                max_output_tokens=8192,
+                response_modalities=["IMAGE"],
+                safety_settings=[
+                    types.SafetySetting(category="HARM_CATEGORY_HATE_SPEECH", threshold="OFF"),
+                    types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="OFF"),
+                    types.SafetySetting(category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="OFF"),
+                    types.SafetySetting(category="HARM_CATEGORY_HARASSMENT", threshold="OFF"),
+                ],
+                image_config=types.ImageConfig(
+                    aspect_ratio="1:1",
+                    output_mime_type="image/png",
+                ),
             ),
-        ),
-    )
+        )
+
+    from google.genai import errors
+
+    # Preview IDs get retired once a model goes GA, so fall back between them
+    response = None
+    for i, model in enumerate(_MODELS):
+        try:
+            response = await _call(model)
+            break
+        except errors.ClientError as e:
+            if e.code != 404 or i == len(_MODELS) - 1:
+                raise
+            logger.warning("Model %s not found, trying %s", model, _MODELS[i + 1])
 
     elapsed = time.perf_counter() - t0
 

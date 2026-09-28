@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     GCS_SIGNING_SA: str = ""
     GOOGLE_GENAI_USE_VERTEXAI: bool = True
     MOCK_AI: bool = False
+    NANO_BANANA_MODEL: str = ""
     PUBLIC_BASE_URL: str = "http://localhost:8000"
 
 
