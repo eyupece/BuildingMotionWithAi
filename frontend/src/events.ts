@@ -1,9 +1,6 @@
 import type { AvatarStyle, LocationTheme } from './types';
 
-// DevFest event packs. Pick one at build time with VITE_EVENT in frontend/.env
-// (e.g. VITE_EVENT=trabzon). Its avatar style and location theme take the first
-// card slot and other events' cards stay hidden. Leave it empty for the
-// original codelab cards. Prompts live in backend/app/events/.
+// DevFest themes, picked with VITE_EVENT in frontend/.env
 export interface DevFestEvent {
   title: string;
   avatarStyle: AvatarStyle;

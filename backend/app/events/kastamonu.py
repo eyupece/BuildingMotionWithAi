@@ -18,7 +18,6 @@ AVATAR_STYLE = {
     "emoji": '🪡',
 }
 
-# Used by Veo when animating the avatar
 VIDEO_STYLE = {
     "name": 'Kastamonu Engraving',
     "camera": 'front-facing medium shot',

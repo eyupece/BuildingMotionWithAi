@@ -1,7 +1,6 @@
 import type { AvatarStyle, LocationTheme } from './types';
 import { ACTIVE_EVENT } from './events';
 
-// The kiosk grids hold 6 cards, so an event's card replaces the last base card.
 const GRID_SIZE = 6;
 
 const BASE_AVATAR_STYLES: AvatarStyle[] = [
