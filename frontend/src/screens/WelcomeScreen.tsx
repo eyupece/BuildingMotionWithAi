@@ -163,7 +163,7 @@ export function WelcomeScreen({ onStart, onDebugTap }: WelcomeScreenProps) {
             )}
           </span>
           <span className="text-white/70 text-base leading-relaxed">
-            I understand this demo temporarily records my face, and that all video is automatically deleted within 24 hours.
+            I understand this demo records my face and processes the video with AI models.
           </span>
           {/* Hidden native checkbox for accessibility */}
           <input

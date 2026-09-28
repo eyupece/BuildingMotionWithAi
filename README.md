@@ -39,6 +39,10 @@ codelab.md  Codelab'in tam metni (İngilizce, adım adım)
 
 ## Kendi projende kurulum
 
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/eyupece/BuildingMotionWithAi)
+
+Butona tıklarsan repo Cloud Shell'de klonlanmış olarak açılır; 1. adımı atlayıp 2. adımdan devam edebilirsin.
+
 Gereken: faturalandırması açık bir Google Cloud hesabı. En kolayı [Cloud Shell](https://ide.cloud.google.com/) üzerinden çalışmak; `gcloud` orada hazır gelir. Adımların ayrıntılı açıklaması [`codelab.md`](codelab.md) içinde.
 
 **1. Repoyu klonla**
