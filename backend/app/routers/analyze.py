@@ -1,11 +1,13 @@
 import asyncio
 import json
+import logging
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from ..config import settings
 from ..services import gemini_service, storage_service, video_utils
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 PHASE_MESSAGES = [
     "Uploading video for analysis...",
@@ -49,7 +51,7 @@ async def analyze_video(video_id: str):
             frame_uri = storage_service.upload_frame(video_id, frame_bytes)
             analysis["frame_uri"] = frame_uri
         except Exception:
-            pass
+            logger.exception("Frame extraction failed for %s", video_id)
 
         yield f"event: result\ndata: {json.dumps(analysis)}\n\n"
 

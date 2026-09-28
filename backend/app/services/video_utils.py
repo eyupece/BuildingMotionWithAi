@@ -153,16 +153,21 @@ def extract_frame(video_path: str, timestamp: str) -> bytes:
     cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
 
     ret, frame = cap.read()
-    if not ret:
-        # Fallback: try frame at 2.5 seconds
-        fallback_frame = int(2.5 * fps)
-        cap.set(cv2.CAP_PROP_POS_FRAMES, fallback_frame)
-        ret, frame = cap.read()
-        if not ret:
-            cap.release()
-            raise RuntimeError("Could not extract frame from video")
-
     cap.release()
+    if not ret:
+        # Browser webm recordings often can't be seeked, and Gemini sometimes
+        # picks a timestamp past the end. Read from the start instead and keep
+        # the last frame we get up to the target.
+        cap = cv2.VideoCapture(video_path)
+        frame = None
+        for _ in range(max(frame_number, 0) + 1):
+            ok, f = cap.read()
+            if not ok:
+                break
+            frame = f
+        cap.release()
+        if frame is None:
+            raise RuntimeError("Could not extract frame from video")
 
     success, buffer = cv2.imencode(".png", frame)
     if not success:
