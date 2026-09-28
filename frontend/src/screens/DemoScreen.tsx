@@ -26,24 +26,17 @@ export function DemoScreen({ onTryAgain }: DemoScreenProps) {
   };
 
   return (
-    <div className="flex flex-col h-full w-full px-8 py-10">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
-      >
-        <h1 className="text-5xl font-extrabold text-white text-center">Demo Mode</h1>
-        <p className="text-white/60 text-xl text-center mt-2">
-          See what Gemini Motion Lab can create
-        </p>
+    <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-8 pt-2 pb-6 flex flex-col gap-5">
+      <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+        <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">Demo mode</h1>
+        <p className="text-muted mt-1">A few videos made with Gemini Motion Lab</p>
       </motion.div>
 
-      {/* Video player */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2 }}
-        className="flex-1 rounded-3xl overflow-hidden bg-black border border-white/10 max-h-[50vh]"
+        transition={{ delay: 0.15 }}
+        className="card p-2 flex-1 min-h-[260px]"
       >
         <video
           ref={videoRef}
@@ -53,49 +46,28 @@ export function DemoScreen({ onTryAgain }: DemoScreenProps) {
           loop
           playsInline
           muted
-          className="w-full h-full object-contain"
+          className="w-full h-full max-h-[55vh] object-contain rounded-2xl bg-[#202124]"
         />
       </motion.div>
 
-      {/* Demo selector */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="flex gap-3 mt-5 justify-center"
-      >
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {DEMOS.map((demo, i) => (
           <button
             key={demo.file}
             onClick={() => handleSelect(i)}
-            className="flex-1 py-4 rounded-2xl text-base font-semibold transition-colors"
+            className="py-3 rounded-2xl text-sm sm:text-base font-semibold border-2 transition-colors"
             style={{
-              touchAction: 'manipulation',
-              background: activeIndex === i ? 'rgba(66,133,244,0.3)' : 'rgba(255,255,255,0.06)',
-              border: `2px solid ${activeIndex === i ? '#4285F4' : 'rgba(255,255,255,0.1)'}`,
-              color: activeIndex === i ? '#fff' : 'rgba(255,255,255,0.6)',
+              background: activeIndex === i ? '#E8F0FE' : '#FFFFFF',
+              borderColor: activeIndex === i ? '#4285F4' : '#DADCE0',
+              color: activeIndex === i ? '#1967D2' : '#5F6368',
             }}
           >
             {demo.label}
           </button>
         ))}
-      </motion.div>
+      </div>
 
-      {/* Try Again */}
-      <motion.button
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        onClick={onTryAgain}
-        className="mt-5 w-full py-6 rounded-full text-white text-xl font-bold"
-        style={{
-          minHeight: '80px',
-          touchAction: 'manipulation',
-          background: 'linear-gradient(135deg, #4285F4, #1a73e8)',
-        }}
-      >
-        Try Again
-      </motion.button>
+      <button onClick={onTryAgain} className="btn-primary w-full">Try Again</button>
     </div>
   );
 }

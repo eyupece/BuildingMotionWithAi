@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { Pipeline } from '../components/Pipeline';
+import { QrIcon, RetryIcon } from '../components/Icons';
 
 interface ResultScreenProps {
   recordedVideoUrl: string;
@@ -39,139 +41,65 @@ export function ResultScreen({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div
-      className="flex flex-col h-full w-full px-8 py-10"
-      onPointerDown={resetTimer}
-    >
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-4xl font-extrabold text-white text-center mb-8"
-      >
-        Your Avatar is Ready! ✨
-      </motion.h1>
+    <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-8 pt-2 pb-6 flex flex-col gap-5" onPointerDown={resetTimer}>
+      <div className="card px-4 sm:px-8 py-5">
+        <Pipeline current="veo" done />
+      </div>
 
-      {/* Side-by-side videos */}
-      <div className="flex gap-4 flex-1 max-h-[55vh]">
-        {/* Original video */}
+      <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+        <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">Your avatar is ready</h1>
+        <p className="text-muted mt-1">Same move, new you.</p>
+      </motion.div>
+
+      <div className="grid sm:grid-cols-2 gap-4 sm:gap-5 flex-1 min-h-0">
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
+          initial={{ opacity: 0, x: -24 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex-1 flex flex-col gap-2"
+          transition={{ delay: 0.15 }}
+          className="card p-2 flex flex-col"
         >
-          <div className="text-center text-white text-lg font-semibold">You</div>
-          <div className="flex-1 rounded-2xl overflow-hidden bg-black border border-white/10">
-            <video
-              ref={originalRef}
-              src={recordedVideoUrl}
-              loop
-              playsInline
-              muted
-              className="w-full h-full object-cover"
-            />
+          <div className="relative flex-1 min-h-[220px] rounded-2xl overflow-hidden bg-[#202124]">
+            <video ref={originalRef} src={recordedVideoUrl} loop playsInline muted className="absolute inset-0 w-full h-full object-cover" />
           </div>
+          <p className="px-2 pt-2.5 pb-1 font-semibold text-ink">You</p>
         </motion.div>
 
-        {/* Avatar video — shimmer/glow border */}
         <motion.div
-          initial={{ opacity: 0, x: 30 }}
+          initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex-1 flex flex-col gap-2"
+          transition={{ delay: 0.25 }}
+          className="card p-2 flex flex-col"
+          style={{ boxShadow: '0 0 0 3px #34A85333, 0 12px 32px rgba(60,64,67,0.14)' }}
         >
-          <div className="text-center font-semibold text-lg" style={{ color: '#4285F4' }}>
-            Your Avatar
+          <div className="relative flex-1 min-h-[220px] rounded-2xl overflow-hidden bg-[#202124] flex items-center justify-center">
+            {generatedVideoUrl ? (
+              <video ref={avatarRef} src={generatedVideoUrl} loop playsInline muted className="absolute inset-0 w-full h-full object-cover" />
+            ) : (
+              <div className="flex flex-col items-center gap-3 p-6 text-center">
+                <img src={avatarImageUrl} alt="Generated avatar" className="w-32 h-32 rounded-2xl object-cover" />
+                <p className="text-white/70 text-sm">Video generation failed. Tap Try Again.</p>
+              </div>
+            )}
           </div>
-          <div className="flex-1 relative rounded-2xl overflow-visible">
-            {/* Animated shimmer border */}
-            <motion.div
-              className="absolute inset-0 rounded-2xl pointer-events-none"
-              style={{ zIndex: 1 }}
-              animate={{
-                boxShadow: [
-                  '0 0 12px 2px #4285F460, 0 0 32px 4px #4285F430',
-                  '0 0 20px 4px #EA433560, 0 0 48px 8px #EA433530',
-                  '0 0 16px 3px #FBBC0560, 0 0 40px 6px #FBBC0530',
-                  '0 0 20px 4px #34A85360, 0 0 48px 8px #34A85330',
-                  '0 0 12px 2px #4285F460, 0 0 32px 4px #4285F430',
-                ],
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            />
-            <div
-              className="w-full h-full rounded-2xl overflow-hidden border-2 flex items-center justify-center"
-              style={{ borderColor: '#4285F4', background: 'black' }}
-            >
-              {generatedVideoUrl ? (
-                <video
-                  ref={avatarRef}
-                  src={generatedVideoUrl}
-                  loop
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="flex flex-col items-center gap-4 p-6">
-                  <img
-                    src={avatarImageUrl}
-                    alt="Generated avatar"
-                    className="w-32 h-32 rounded-xl object-cover"
-                  />
-                  <p className="text-white/60 text-center text-sm">
-                    Video generation failed — tap Try Again
-                  </p>
-                </div>
-              )}
-            </div>
+          <div className="flex items-center gap-2.5 px-2 pt-2.5 pb-1">
+            <img src={avatarImageUrl} alt="" className="w-7 h-7 rounded-lg object-cover" />
+            <p className="font-semibold text-ink">Your avatar</p>
+            <span className="ml-auto text-xs font-medium text-google-green bg-[#34A853]/10 rounded-full px-2.5 py-1">Veo</span>
           </div>
         </motion.div>
       </div>
 
-      {/* Avatar image */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="flex justify-center mt-4"
+        className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-center"
       >
-        <img
-          src={avatarImageUrl}
-          alt="Generated avatar"
-          className="w-24 h-24 rounded-xl object-cover border-2 border-white/20"
-        />
-      </motion.div>
-
-      {/* Buttons */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="flex gap-4 mt-4"
-      >
-        <button
-          onClick={onTryAgain}
-          className="flex-1 py-5 rounded-full text-white text-xl font-semibold"
-          style={{
-            minHeight: '80px',
-            touchAction: 'manipulation',
-            background: 'rgba(255,255,255,0.1)',
-            border: '2px solid rgba(255,255,255,0.2)',
-          }}
-        >
-          Try Again
+        <button onClick={onTryAgain} className="btn-secondary sm:min-w-[200px]">
+          <RetryIcon className="w-5 h-5" /> Try Again
         </button>
-        <button
-          onClick={onShare}
-          className="flex-1 py-5 rounded-full text-white text-xl font-bold"
-          style={{
-            minHeight: '80px',
-            touchAction: 'manipulation',
-            background: 'linear-gradient(135deg, #34A853, #0f9d58)',
-          }}
-        >
-          Share ↗
+        <button onClick={onShare} className="btn-primary sm:min-w-[200px]" style={{ background: '#EA4335', boxShadow: '0 6px 20px rgba(234,67,53,0.35)' }}>
+          <QrIcon className="w-5 h-5" /> Share
         </button>
       </motion.div>
     </div>

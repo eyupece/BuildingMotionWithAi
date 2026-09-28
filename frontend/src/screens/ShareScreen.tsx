@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { useApi } from '../hooks/useApi';
+import { Pipeline } from '../components/Pipeline';
 
 interface ShareScreenProps {
   onDone: () => void;
@@ -71,93 +72,56 @@ export function ShareScreen({ onDone, videoId, shareUrl }: ShareScreenProps) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div
-      className="flex flex-col items-center h-full w-full px-8 overflow-y-auto py-10"
-      onPointerDown={resetTimer}
-    >
+    <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-8 pt-2 pb-6 flex flex-col gap-5" onPointerDown={resetTimer}>
+      <div className="card px-4 sm:px-8 py-5">
+        <Pipeline current="share" done />
+      </div>
+
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="flex flex-col items-center gap-6"
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="flex-1 card grid md:grid-cols-[auto_1fr] gap-8 items-center p-6 sm:p-10"
       >
-        <h1 className="text-5xl font-extrabold text-white text-center">
-          Scan to get your video!
-        </h1>
-
-        {/* Composed video preview (shows when ready) */}
-        <AnimatePresence>
-          {composedVideoUrl && (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="rounded-2xl overflow-hidden"
-              style={{ width: 180, aspectRatio: '9/16' }}
-            >
-              <video
-                src={composedVideoUrl}
-                autoPlay
-                loop
-                muted
-                playsInline
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* QR Code — shown immediately */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="p-6 bg-white rounded-3xl"
-        >
-          <QRCodeSVG
-            value={shareUrl}
-            size={280}
-            bgColor="#ffffff"
-            fgColor="#0A0A1A"
-            level="M"
-          />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.25 }}
-          className="text-center"
-        >
-          <p className="text-white/70 text-2xl">
-            Scan to download &amp; share
-          </p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="p-4 bg-white rounded-3xl border border-line">
+            <QRCodeSVG value={shareUrl} size={240} bgColor="#ffffff" fgColor="#202124" level="M" className="w-[200px] h-[200px] sm:w-[240px] sm:h-[240px]" />
+          </div>
           {isComposing && (
             <motion.p
               animate={{ opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-              className="text-white/40 text-base mt-2"
+              className="text-muted text-sm"
             >
               Composing video...
             </motion.p>
           )}
-        </motion.div>
+        </div>
 
-        <button
-          onClick={onDone}
-          className="px-16 py-5 rounded-full text-white text-xl font-bold"
-          style={{
-            minHeight: '80px',
-            touchAction: 'manipulation',
-            background: 'linear-gradient(135deg, #4285F4, #1a73e8)',
-          }}
-        >
-          Start Over
-        </button>
+        <div className="flex flex-col gap-5 text-center md:text-left items-center md:items-start">
+          <div>
+            <h1 className="text-3xl sm:text-5xl font-bold text-ink tracking-tight">Scan to get your video</h1>
+            <p className="text-muted text-lg mt-2">Download it on your phone and share it.</p>
+          </div>
 
-        <p className="text-white/30 text-base">
-          Auto-returning to start in {timeLeft}s
-        </p>
+          <AnimatePresence>
+            {composedVideoUrl && (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-2xl overflow-hidden shadow-card bg-[#202124]"
+                style={{ width: 150, aspectRatio: '9/16' }}
+              >
+                <video src={composedVideoUrl} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <button onClick={onDone} className="btn-primary w-full sm:w-auto px-12">
+            Start Over
+          </button>
+          <p className="text-muted text-sm">Returning to start in {timeLeft}s</p>
+        </div>
       </motion.div>
     </div>
   );

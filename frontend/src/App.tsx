@@ -9,6 +9,9 @@ import { ResultScreen } from './screens/ResultScreen';
 import { ShareScreen } from './screens/ShareScreen';
 import { DemoScreen } from './screens/DemoScreen';
 import { QueueFullScreen } from './screens/QueueFullScreen';
+import { Header } from './components/Header';
+import { Pipeline } from './components/Pipeline';
+import { CloseIcon } from './components/Icons';
 import { API_BASE, getLastApiError } from './hooks/useApi';
 import type { AppState, Screen, AvatarStyle, LocationTheme } from './types';
 
@@ -267,120 +270,120 @@ export default function App() {
   // ── Boot screen ──────────────────────────────────────────────────────────────
   if (bootState === 'booting') {
     return (
-      <div
-        className="h-screen w-screen flex flex-col items-center justify-center gap-8"
-        style={{ background: '#0A0A1A' }}
-      >
-        <motion.div
+      <div className="h-[100dvh] w-full flex flex-col items-center justify-center gap-6 bg-canvas px-6 text-center">
+        <div className="w-full max-w-sm">
+          <Pipeline current="all" compact />
+        </div>
+        <motion.p
           animate={{ opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-          className="flex flex-col items-center gap-6"
+          className="text-muted text-lg font-medium"
         >
-          {/* Spinner */}
-          <div
-            className="w-16 h-16 rounded-full border-4 border-white/10"
-            style={{
-              borderTopColor: '#4285F4',
-              animation: 'spin 1s linear infinite',
-            }}
-          />
-          <p className="text-white/80 text-2xl font-semibold">
-            Connecting to Gemini Motion Lab...
-          </p>
-        </motion.div>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          Connecting to Gemini Motion Lab...
+        </motion.p>
       </div>
     );
   }
 
   return (
-    <div className="h-screen w-screen overflow-hidden" style={{ background: '#0A0A1A' }}>
+    <div className="relative h-[100dvh] w-full flex flex-col overflow-hidden bg-canvas">
+      {/* soft color wash in the background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -left-32 w-[28rem] h-[28rem] rounded-full bg-[#4285F4]/10 blur-3xl" />
+        <div className="absolute -bottom-48 -right-24 w-[30rem] h-[30rem] rounded-full bg-[#A142F4]/10 blur-3xl" />
+        <div className="absolute top-1/3 right-1/4 w-72 h-72 rounded-full bg-[#F9AB00]/[0.07] blur-3xl" />
+      </div>
+
+      <Header onLogoTap={handleDebugTap} />
+
       {/* ── Main screen ── */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={state.currentScreen}
-          variants={variants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="h-full w-full"
-        >
-          {state.currentScreen === 'welcome' && (
-            <WelcomeScreen onStart={handleStart} onDebugTap={handleDebugTap} />
-          )}
+      <main className="relative flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={state.currentScreen}
+            variants={variants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="min-h-full w-full flex flex-col"
+          >
+            {state.currentScreen === 'welcome' && (
+              <WelcomeScreen onStart={handleStart} />
+            )}
 
-          {state.currentScreen === 'record' && (
-            <RecordScreen
-              onComplete={handleRecordComplete}
-              onBack={() => {
-                setTransitionType('slideUp');
-                dispatch({ type: 'GO_TO', screen: 'welcome' });
-              }}
-            />
-          )}
+            {state.currentScreen === 'record' && (
+              <RecordScreen
+                onComplete={handleRecordComplete}
+                onBack={() => {
+                  setTransitionType('slideUp');
+                  dispatch({ type: 'GO_TO', screen: 'welcome' });
+                }}
+              />
+            )}
 
-          {state.currentScreen === 'avatarStyle' && (
-            <AvatarStyleScreen
-              onSelect={handleStyleSelect}
-              onBack={() => {
-                setTransitionType('slideLeft');
-                dispatch({ type: 'GO_TO', screen: 'record' });
-              }}
-              onTimeout={handleReset}
-            />
-          )}
+            {state.currentScreen === 'avatarStyle' && (
+              <AvatarStyleScreen
+                onSelect={handleStyleSelect}
+                onBack={() => {
+                  setTransitionType('slideLeft');
+                  dispatch({ type: 'GO_TO', screen: 'record' });
+                }}
+                onTimeout={handleReset}
+              />
+            )}
 
-          {state.currentScreen === 'locationTheme' && (
-            <LocationThemeScreen
-              onSelect={handleThemeSelect}
-              onBack={() => {
-                setTransitionType('slideLeft');
-                dispatch({ type: 'GO_TO', screen: 'avatarStyle' });
-              }}
-              onTimeout={handleReset}
-            />
-          )}
+            {state.currentScreen === 'locationTheme' && (
+              <LocationThemeScreen
+                onSelect={handleThemeSelect}
+                onBack={() => {
+                  setTransitionType('slideLeft');
+                  dispatch({ type: 'GO_TO', screen: 'avatarStyle' });
+                }}
+                onTimeout={handleReset}
+              />
+            )}
 
-          {state.currentScreen === 'processing' && state.selectedStyle && state.selectedTheme && state.recordedVideoUrl && (
-            <ProcessingScreen
-              style={state.selectedStyle}
-              theme={state.selectedTheme}
-              recordedVideoUrl={state.recordedVideoUrl}
-              recordedBlob={state.recordedBlob}
-              onComplete={handleProcessingComplete}
-              onError={handleReset}
-              onDemo={handleGoToDemo}
-              onNextPerson={handleNextPerson}
-            />
-          )}
+            {state.currentScreen === 'processing' && state.selectedStyle && state.selectedTheme && state.recordedVideoUrl && (
+              <ProcessingScreen
+                style={state.selectedStyle}
+                theme={state.selectedTheme}
+                recordedVideoUrl={state.recordedVideoUrl}
+                recordedBlob={state.recordedBlob}
+                onComplete={handleProcessingComplete}
+                onError={handleReset}
+                onDemo={handleGoToDemo}
+                onNextPerson={handleNextPerson}
+              />
+            )}
 
-          {state.currentScreen === 'result' && state.recordedVideoUrl && state.avatarImageUrl && (
-            <ResultScreen
-              recordedVideoUrl={state.recordedVideoUrl}
-              avatarImageUrl={state.avatarImageUrl}
-              generatedVideoUrl={state.generatedVideoUrl}
-              onShare={handleShare}
-              onTryAgain={handleReset}
-              onTimeout={handleReset}
-            />
-          )}
+            {state.currentScreen === 'result' && state.recordedVideoUrl && state.avatarImageUrl && (
+              <ResultScreen
+                recordedVideoUrl={state.recordedVideoUrl}
+                avatarImageUrl={state.avatarImageUrl}
+                generatedVideoUrl={state.generatedVideoUrl}
+                onShare={handleShare}
+                onTryAgain={handleReset}
+                onTimeout={handleReset}
+              />
+            )}
 
-          {state.currentScreen === 'share' && (
-            <ShareScreen onDone={handleReset} videoId={state.videoId ?? ''} shareUrl={state.shareUrl ?? ''} />
-          )}
+            {state.currentScreen === 'share' && (
+              <ShareScreen onDone={handleReset} videoId={state.videoId ?? ''} shareUrl={state.shareUrl ?? ''} />
+            )}
 
-          {state.currentScreen === 'demo' && (
-            <DemoScreen onTryAgain={handleReset} />
-          )}
+            {state.currentScreen === 'demo' && (
+              <DemoScreen onTryAgain={handleReset} />
+            )}
 
-          {state.currentScreen === 'queueFull' && (
-            <QueueFullScreen onReady={() => {
-              setTransitionType('fadeOut');
-              dispatch({ type: 'RESET' });
-            }} />
-          )}
-        </motion.div>
-      </AnimatePresence>
+            {state.currentScreen === 'queueFull' && (
+              <QueueFullScreen onReady={() => {
+                setTransitionType('fadeOut');
+                dispatch({ type: 'RESET' });
+              }} />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </main>
 
       {/* ── Network error overlay ── */}
       <AnimatePresence>
@@ -390,21 +393,18 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 flex flex-col items-center justify-center gap-6 z-50"
-            style={{ background: 'rgba(10,10,26,0.92)', backdropFilter: 'blur(8px)' }}
+            className="absolute inset-0 flex items-center justify-center z-50 px-6"
+            style={{ background: 'rgba(248,250,253,0.85)', backdropFilter: 'blur(8px)' }}
           >
-            <motion.div
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="flex flex-col items-center gap-5"
-            >
+            <div className="card flex flex-col items-center gap-4 px-10 py-8 text-center">
               <div
-                className="w-14 h-14 rounded-full border-4 border-white/10"
+                className="w-12 h-12 rounded-full border-4 border-faint"
                 style={{ borderTopColor: '#4285F4', animation: 'spin 1s linear infinite' }}
               />
-              <h2 className="text-3xl font-bold text-white">Connection lost</h2>
-              <p className="text-white/60 text-xl">Reconnecting...</p>
-            </motion.div>
+              <h2 className="text-2xl font-bold text-ink">Connection lost</h2>
+              <p className="text-muted">Reconnecting...</p>
+            </div>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </motion.div>
         )}
       </AnimatePresence>
@@ -417,28 +417,20 @@ export default function App() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
-            className="absolute bottom-0 left-0 right-0 z-50 p-6 rounded-t-3xl"
-            style={{ background: 'rgba(20,20,40,0.97)', border: '1px solid rgba(255,255,255,0.1)' }}
+            className="absolute bottom-0 left-0 right-0 z-50 p-6 rounded-t-3xl bg-white border-t border-line shadow-lift"
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-white font-bold text-xl">Debug Panel</h3>
-              <button
-                onClick={() => setShowDebugPanel(false)}
-                className="text-white/60 text-2xl px-3"
-                style={{ touchAction: 'manipulation' }}
-              >
-                ✕
+              <h3 className="text-ink font-bold text-xl">Debug Panel</h3>
+              <button onClick={() => setShowDebugPanel(false)} className="text-muted p-2">
+                <CloseIcon className="w-6 h-6" />
               </button>
             </div>
             <div className="space-y-2 font-mono text-sm">
-              <div className="text-white/50">Screen: <span className="text-google-blue">{state.currentScreen}</span></div>
-              <div className="text-white/50">Boot: <span className="text-google-green">{bootState}</span></div>
-              <div className="text-white/50">Network error: <span className={isNetworkError ? 'text-google-red' : 'text-google-green'}>{String(isNetworkError)}</span></div>
-              <div className="text-white/50 mt-3">Last API error:</div>
-              <div
-                className="text-google-red text-xs p-3 rounded-xl break-all"
-                style={{ background: 'rgba(234,67,53,0.1)', minHeight: '48px' }}
-              >
+              <div className="text-muted">Screen: <span className="text-google-blue">{state.currentScreen}</span></div>
+              <div className="text-muted">Boot: <span className="text-google-green">{bootState}</span></div>
+              <div className="text-muted">Network error: <span className={isNetworkError ? 'text-google-red' : 'text-google-green'}>{String(isNetworkError)}</span></div>
+              <div className="text-muted mt-3">Last API error:</div>
+              <div className="text-google-red text-xs p-3 rounded-xl break-all bg-[#EA4335]/10 min-h-[48px]">
                 {debugError ?? '(none)'}
               </div>
             </div>

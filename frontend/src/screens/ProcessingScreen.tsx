@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
-import { ProgressRing } from '../components/ProgressRing';
+import { Pipeline, type StageKey } from '../components/Pipeline';
+import { ArrowRight, QrIcon, RetryIcon, SparkIcon } from '../components/Icons';
 import { PROCESSING_TIPS, getMockAvatarImageUrl } from '../mockData';
 import { useApi, API_BASE } from '../hooks/useApi';
 import type { AnalysisResult } from '../hooks/useApi';
@@ -206,53 +207,29 @@ export function ProcessingScreen({
   // Fatal error screen
   if (fatalError) {
     return (
-      <div className="flex flex-col items-center justify-center h-full w-full px-8 text-center gap-8">
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-8">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center gap-6"
+          transition={{ duration: 0.4 }}
+          className="card flex flex-col items-center gap-5 px-6 sm:px-12 py-10 text-center max-w-lg w-full"
         >
-          <div
-            className="w-24 h-24 rounded-full flex items-center justify-center text-5xl"
-            style={{ background: 'rgba(234,67,53,0.15)', border: '2px solid rgba(234,67,53,0.4)' }}
-          >
-            ✦
+          <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#EA4335]/10 text-google-red">
+            <SparkIcon className="w-9 h-9" />
           </div>
-          <h2 className="text-5xl font-extrabold text-white">Something went wrong</h2>
-          <p className="text-white/60 text-xl max-w-sm">
-            We couldn't connect to the AI services right now.
-          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-ink">Something went wrong</h2>
+          <p className="text-muted text-lg">We couldn't connect to the AI services right now.</p>
           {fatalErrorMessage && (
-            <p className="text-red-400/80 text-xs font-mono max-w-sm break-all text-center px-2 py-2 rounded-lg bg-red-900/20">
+            <p className="text-google-red text-xs font-mono w-full break-all px-3 py-2 rounded-xl bg-[#EA4335]/10">
               {fatalErrorMessage}
             </p>
           )}
-          <div className="flex flex-col gap-3 w-full max-w-xs mt-2">
-            <button
-              onClick={onError}
-              className="w-full py-5 rounded-full text-white text-xl font-bold"
-              style={{
-                minHeight: '72px',
-                touchAction: 'manipulation',
-                background: 'linear-gradient(135deg, #4285F4, #1a73e8)',
-              }}
-            >
-              Try Again
+          <div className="flex flex-col gap-3 w-full mt-2">
+            <button onClick={onError} className="btn-primary w-full">
+              <RetryIcon className="w-5 h-5" /> Try Again
             </button>
             {allApiFailed && (
-              <button
-                onClick={onDemo}
-                className="w-full py-5 rounded-full text-white text-xl font-semibold"
-                style={{
-                  minHeight: '72px',
-                  touchAction: 'manipulation',
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '2px solid rgba(255,255,255,0.2)',
-                }}
-              >
-                Watch a Demo
-              </button>
+              <button onClick={onDemo} className="btn-secondary w-full">Watch a Demo</button>
             )}
           </div>
         </motion.div>
@@ -260,204 +237,195 @@ export function ProcessingScreen({
     );
   }
 
+  const stage: StageKey =
+    phase === 'analyzing' ? (currentShareUrl ? 'gemini' : 'upload') : phase === 'creating' ? 'banana' : 'veo';
 
-  // Full-width centered status panel
   return (
-    <div className="flex h-full w-full">
-      {/* Status Panel (full width) */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="flex flex-col items-center justify-center gap-5 px-8 overflow-hidden w-full"
-      >
-        {/* ---- Phase-specific content ---- */}
-        <AnimatePresence mode="wait">
+    <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-8 pt-2 pb-6 flex flex-col gap-5">
+      <div className="card px-4 sm:px-8 py-5">
+        <Pipeline current={stage} />
+      </div>
 
-          {phase === 'analyzing' && (
-            <motion.div
-              key="analyzing"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="w-full"
-            >
-              <h2 className="text-3xl font-bold text-white mb-5 text-center">
-                Analyzing your movement
-              </h2>
-              <div className="space-y-2 font-mono">
-                {analysisLines.map((line, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="flex items-center gap-3 text-base"
-                  >
-                    <span className="text-google-green">▶</span>
-                    <span className={i === analysisLines.length - 1 ? 'text-white' : 'text-white/60'}>
-                      {line}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
+      <div className="flex-1 grid lg:grid-cols-[1fr_340px] gap-5 min-h-0">
+        {/* Stage content */}
+        <div className="card relative overflow-hidden flex items-center justify-center px-5 sm:px-10 py-8 min-h-[360px]">
+          <AnimatePresence mode="wait">
+            {phase === 'analyzing' && (
+              <motion.div
+                key="analyzing"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                className="w-full max-w-2xl flex flex-col gap-5"
+              >
+                <div>
+                  <p className="eyebrow mb-1" style={{ color: '#A142F4' }}>{currentShareUrl ? 'Gemini' : 'Uploading'}</p>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-ink">Analyzing your movement</h2>
+                </div>
+                <div className="grid sm:grid-cols-[160px_1fr] gap-4 items-stretch">
+                  <video
+                    src={recordedVideoUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="hidden sm:block w-full h-full max-h-48 object-cover rounded-2xl bg-faint"
+                  />
+                  <div className="rounded-2xl bg-[#202124] p-4 sm:p-5 font-mono text-[13px] sm:text-sm min-h-[176px]">
+                    <div className="text-[#9AA0A6] mb-2">{'// motion_analysis.json'}</div>
+                    {analysisLines.length === 0 && (
+                      <motion.div animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.2, repeat: Infinity }} className="text-[#9AA0A6]">
+                        waiting for Gemini...
+                      </motion.div>
+                    )}
+                    {analysisLines.map((line, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex gap-2 leading-relaxed"
+                      >
+                        <span style={{ color: '#C58AF9' }}>›</span>
+                        <span className={i === analysisLines.length - 1 ? 'text-white' : 'text-[#BDC1C6]'}>{line}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-          {phase === 'creating' && (
-            <motion.div
-              key="creating"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex flex-col items-center gap-6"
-            >
-              <h2 className="text-3xl font-bold text-white text-center">
-                Creating your avatar
-              </h2>
-              <div className="relative w-52 h-52 rounded-2xl overflow-hidden">
-                {!showAvatar ? (
-                  <motion.div
-                    className="absolute inset-0 rounded-2xl overflow-hidden"
-                    style={{ background: `${style.color}20` }}
-                  >
+            {phase === 'creating' && (
+              <motion.div
+                key="creating"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                className="flex flex-col items-center gap-5 text-center"
+              >
+                <div>
+                  <p className="eyebrow mb-1" style={{ color: '#E37400' }}>Nano Banana</p>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-ink">Creating your {style.name} avatar</h2>
+                </div>
+                <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-3xl overflow-hidden" style={{ background: `${style.color}18` }}>
+                  {!showAvatar ? (
                     <motion.div
                       animate={{ x: ['-100%', '200%'] }}
                       transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-                      className="absolute inset-0"
-                      style={{
-                        background: `linear-gradient(90deg, transparent 0%, ${style.color}60 50%, transparent 100%)`,
-                        width: '50%',
-                      }}
+                      className="absolute inset-y-0 w-1/2"
+                      style={{ background: `linear-gradient(90deg, transparent 0%, ${style.color}55 50%, transparent 100%)` }}
                     />
-                  </motion.div>
-                ) : (
-                  <AnimatePresence>
-                    {avatarImageUrl && (
+                  ) : (
+                    avatarImageUrl && (
                       <>
                         <motion.div
-                          className="absolute inset-0 rounded-2xl z-10"
-                          initial={{ opacity: 0.8 }}
+                          className="absolute inset-0 z-10 bg-white pointer-events-none"
+                          initial={{ opacity: 0.9 }}
                           animate={{ opacity: 0 }}
-                          transition={{ duration: 0.4, delay: 0.1 }}
-                          style={{ background: 'white', pointerEvents: 'none' }}
+                          transition={{ duration: 0.5, delay: 0.1 }}
                         />
                         <motion.img
                           src={avatarImageUrl}
                           alt="Your avatar"
-                          className="w-full h-full object-contain rounded-2xl"
-                          initial={{ scale: 0.5, opacity: 0, filter: 'blur(20px)' }}
+                          className="w-full h-full object-cover"
+                          initial={{ scale: 0.6, opacity: 0, filter: 'blur(20px)' }}
                           animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
                           transition={{
-                            scale: { type: 'spring', stiffness: 180, damping: 18, duration: 1.5 },
+                            scale: { type: 'spring', stiffness: 180, damping: 18 },
                             opacity: { duration: 1.0, ease: 'easeOut' },
                             filter: { duration: 1.0, ease: 'easeOut' },
                           }}
                         />
                       </>
-                    )}
-                  </AnimatePresence>
-                )}
+                    )
+                  )}
+                </div>
+              </motion.div>
+            )}
+
+            {phase === 'generating' && (
+              <motion.div
+                key="generating"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                className="w-full max-w-xl flex flex-col items-center gap-6 text-center"
+              >
+                <div>
+                  <p className="eyebrow mb-1" style={{ color: '#34A853' }}>Veo</p>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-ink">Placing you in {theme.name}</h2>
+                </div>
+
+                <div className="flex items-center gap-3 sm:gap-5">
+                  {avatarImageUrl && (
+                    <img src={avatarImageUrl} alt="Your avatar" className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl object-cover shadow-card" />
+                  )}
+                  <motion.div
+                    animate={{ x: [0, 6, 0] }}
+                    transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                    className="text-muted"
+                  >
+                    <ArrowRight className="w-6 h-6" />
+                  </motion.div>
+                  <img src={theme.previewImage} alt={theme.name} className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl object-cover shadow-card" />
+                </div>
+
+                <div className="w-full">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-muted">Generating an 8-second video</span>
+                    <span className="font-semibold text-ink">{Math.round(videoProgress * 100)}%</span>
+                  </div>
+                  <div className="h-2.5 w-full rounded-full bg-faint overflow-hidden">
+                    <motion.div
+                      className="h-full rounded-full bg-google-green"
+                      animate={{ width: `${Math.max(videoProgress, 0.03) * 100}%` }}
+                      transition={{ duration: 0.6, ease: 'easeOut' }}
+                    />
+                  </div>
+                </div>
+
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={tipIndex}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.35 }}
+                    className="text-muted text-sm"
+                  >
+                    {PROCESSING_TIPS[tipIndex]}
+                  </motion.p>
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* QR + next person, as soon as the upload is done */}
+        <div className="card flex flex-col items-center justify-center gap-4 p-6 text-center">
+          {currentShareUrl ? (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-4 w-full">
+              <div className="flex lg:flex-col items-center gap-4 text-left lg:text-center">
+                <div className="p-3 bg-white rounded-2xl border border-line flex-shrink-0">
+                  <QRCodeSVG value={currentShareUrl} size={132} bgColor="#ffffff" fgColor="#202124" level="M" />
+                </div>
+                <div>
+                  <p className="text-ink font-semibold text-lg">Scan with your phone</p>
+                  <p className="text-muted text-sm">Your video shows up there when it's ready. No need to wait here.</p>
+                </div>
               </div>
+              <button onClick={onNextPerson} className="btn-secondary w-full">
+                Next person
+              </button>
             </motion.div>
-          )}
-
-          {phase === 'generating' && (
-            <motion.div
-              key="generating"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex flex-col items-center gap-5"
-            >
-              <h2 className="text-2xl font-bold text-white text-center">
-                Placing you in {theme.name} {theme.emoji}
-              </h2>
-
-              {avatarImageUrl && (
-                <motion.div
-                  animate={{
-                    boxShadow: [
-                      `0 0 20px ${style.color}40`,
-                      `0 0 60px ${style.color}80`,
-                      `0 0 20px ${style.color}40`,
-                    ],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-32 h-40 rounded-2xl overflow-hidden"
-                >
-                  <img src={avatarImageUrl} alt="Your avatar" className="w-full h-full object-contain" />
-                </motion.div>
-              )}
-
-              <ProgressRing progress={videoProgress} size={90} strokeWidth={7} brandCycle>
-                <span className="text-white font-bold text-base">
-                  {Math.round(videoProgress * 100)}%
-                </span>
-              </ProgressRing>
-
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={tipIndex}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.4 }}
-                  className="text-white/50 text-center text-sm max-w-xs"
-                >
-                  {PROCESSING_TIPS[tipIndex]}
-                </motion.p>
-              </AnimatePresence>
-            </motion.div>
-          )}
-
-        </AnimatePresence>
-
-        {/* ---- QR Code + Next Person (shown as soon as video upload completes) ---- */}
-        {currentShareUrl && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col items-center gap-3 w-full"
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white rounded-xl">
-                <QRCodeSVG
-                  value={currentShareUrl}
-                  size={90}
-                  bgColor="#ffffff"
-                  fgColor="#0A0A1A"
-                  level="M"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-white/70 text-sm font-semibold">
-                  Scan with your phone
-                </p>
-                <p className="text-white/40 text-xs max-w-[150px]">
-                  Your video appears automatically when ready 📱
-                </p>
-              </div>
+          ) : (
+            <div className="flex flex-col items-center gap-3 text-muted">
+              <QrIcon className="w-10 h-10 text-line" />
+              <p className="text-sm">Your QR code appears once the upload is done.</p>
             </div>
-
-            <motion.button
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              onClick={onNextPerson}
-              className="w-full py-3 rounded-full text-white text-lg font-bold"
-              style={{
-                minHeight: '52px',
-                touchAction: 'manipulation',
-                background: 'linear-gradient(135deg, #34A853, #1e8e3e)',
-              }}
-            >
-              ✋ Next Person
-            </motion.button>
-          </motion.div>
-        )}
-      </motion.div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

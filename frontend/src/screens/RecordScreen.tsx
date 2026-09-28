@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCamera } from '../hooks/useCamera';
 import { CountdownTimer } from '../components/CountdownTimer';
 import { ProgressRing } from '../components/ProgressRing';
+import { ArrowRight, CameraIcon, CloseIcon, RetryIcon } from '../components/Icons';
 
 interface RecordScreenProps {
   onComplete: (blob: Blob, url: string) => void;
@@ -108,49 +109,26 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
     }
   }, [recordedBlob, recordedUrl, stopCamera, onComplete]);
 
-  // Camera permission error — full-screen friendly UI
+  // Camera permission error
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-full w-full gap-8 px-8 text-center"
-        style={{ background: '#0A0A1A' }}>
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-8">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center gap-6"
+          transition={{ duration: 0.4 }}
+          className="card flex flex-col items-center gap-5 px-6 sm:px-12 py-10 text-center max-w-lg"
         >
-          <div className="w-28 h-28 rounded-full flex items-center justify-center text-6xl"
-            style={{ background: 'rgba(234,67,53,0.15)', border: '2px solid rgba(234,67,53,0.4)' }}>
-            📷
+          <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#EA4335]/10 text-google-red">
+            <CameraIcon className="w-9 h-9" />
           </div>
-          <h2 className="text-5xl font-extrabold text-white">Camera access needed</h2>
-          <p className="text-white/60 text-xl max-w-sm">
+          <h2 className="text-3xl sm:text-4xl font-bold text-ink">Camera access needed</h2>
+          <p className="text-muted text-lg">
             Please allow camera access to record your move. Check your browser settings and try again.
           </p>
-          <div className="flex gap-4 mt-4">
-            <button
-              onClick={onBack}
-              className="px-10 py-5 rounded-full text-white text-xl font-semibold"
-              style={{
-                minHeight: '72px',
-                touchAction: 'manipulation',
-                background: 'rgba(255,255,255,0.1)',
-                border: '2px solid rgba(255,255,255,0.2)',
-              }}
-            >
-              Go Back
-            </button>
-            <button
-              onClick={() => startCamera()}
-              className="px-10 py-5 rounded-full text-white text-xl font-bold"
-              style={{
-                minHeight: '72px',
-                touchAction: 'manipulation',
-                background: 'linear-gradient(135deg, #4285F4, #1a73e8)',
-              }}
-            >
-              Retry
-            </button>
+          <div className="flex flex-col sm:flex-row gap-3 w-full mt-2">
+            <button onClick={onBack} className="btn-secondary flex-1">Go Back</button>
+            <button onClick={() => startCamera()} className="btn-primary flex-1">Retry</button>
           </div>
         </motion.div>
       </div>
@@ -158,180 +136,149 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
   }
 
   return (
-    <div className="relative h-full w-full bg-black overflow-hidden">
-      {/* Camera preview */}
-      <AnimatePresence>
-        {recordState !== 'playback' && recordState !== 'interrupted' && (
-          <motion.video
-            key="camera"
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ transform: 'scaleX(-1)' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Playback video */}
-      <AnimatePresence>
-        {recordState === 'playback' && (
-          <motion.video
-            key="playback"
-            ref={playbackRef}
-            autoPlay
-            loop
-            playsInline
-            muted
-            className="absolute inset-0 w-full h-full object-cover"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Recording interrupted overlay */}
-      <AnimatePresence>
-        {recordState === 'interrupted' && (
-          <motion.div
-            key="interrupted"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-8 text-center"
-            style={{ background: 'rgba(10,10,26,0.92)' }}
-          >
-            <div className="text-5xl">⚠️</div>
-            <h2 className="text-4xl font-bold text-white">Recording interrupted</h2>
-            <p className="text-white/60 text-xl">The camera stream was lost. Please retake your video.</p>
-            <button
-              onClick={handleRetakeAfterInterrupt}
-              className="px-12 py-5 rounded-full text-white text-xl font-bold mt-4"
-              style={{
-                minHeight: '72px',
-                touchAction: 'manipulation',
-                background: 'linear-gradient(135deg, #4285F4, #1a73e8)',
-              }}
-            >
-              Retake
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Dark overlay gradient at bottom */}
-      {recordState !== 'interrupted' && (
-        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-      )}
-
-      {/* Countdown overlay */}
-      {recordState === 'countdown' && <CountdownTimer count={countdown} />}
-
-      {/* Recording indicator */}
-      {recordState === 'recording' && (
-        <div className="absolute top-6 left-6 flex items-center gap-2 bg-black/50 rounded-full px-4 py-2">
-          <motion.div
-            animate={{ opacity: [1, 0, 1] }}
-            transition={{ duration: 1, repeat: Infinity }}
-            className="w-3 h-3 rounded-full bg-google-red"
-          />
-          <span className="text-white font-semibold text-sm">REC</span>
+    <div className="flex-1 flex flex-col w-full max-w-5xl mx-auto px-4 sm:px-8 pt-2 pb-6">
+      <div className="flex items-end justify-between gap-4 mb-4">
+        <div>
+          <p className="eyebrow mb-1">Step 1 of 3</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">
+            {recordState === 'playback' ? 'Looks good?' : 'Record your move'}
+          </h1>
+          <p className="text-muted mt-1">
+            {recordState === 'playback'
+              ? 'This clip goes to Gemini for motion analysis.'
+              : 'Stand back so your upper body is in frame, then make a clear 3-second move.'}
+          </p>
         </div>
-      )}
+        {recordState === 'preview' && (
+          <button onClick={onBack} className="flex-shrink-0 w-11 h-11 rounded-full bg-white border border-line flex items-center justify-center text-muted hover:text-ink" aria-label="Close">
+            <CloseIcon className="w-5 h-5" />
+          </button>
+        )}
+      </div>
 
-      {/* Playback label */}
-      {recordState === 'playback' && (
-        <div className="absolute top-6 left-0 right-0 flex justify-center">
-          <div className="bg-black/60 rounded-full px-6 py-2">
-            <span className="text-white/80 font-medium text-lg">Preview</span>
-          </div>
-        </div>
-      )}
+      {/* Camera frame */}
+      <div className="relative w-full aspect-[3/4] sm:aspect-video max-h-[62vh] rounded-3xl overflow-hidden bg-[#202124] shadow-lift ring-1 ring-black/5">
+        <AnimatePresence>
+          {recordState !== 'playback' && recordState !== 'interrupted' && (
+            <motion.video
+              key="camera"
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ transform: 'scaleX(-1)' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+          )}
+        </AnimatePresence>
 
-      {/* Bottom controls */}
-      {recordState !== 'interrupted' && (
-        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center pb-12 gap-8">
-          {recordState === 'preview' && (
+        <AnimatePresence>
+          {recordState === 'playback' && (
+            <motion.video
+              key="playback"
+              ref={playbackRef}
+              autoPlay
+              loop
+              playsInline
+              muted
+              className="absolute inset-0 w-full h-full object-cover"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* framing guide */}
+        {recordState === 'preview' && (
+          <div className="absolute inset-[8%] rounded-[2rem] border-2 border-dashed border-white/35 pointer-events-none" />
+        )}
+
+        <AnimatePresence>
+          {recordState === 'interrupted' && (
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col items-center gap-4"
+              key="interrupted"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center bg-canvas"
             >
-              <p className="text-white/60 text-lg">Tap to record your 3-second move</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-ink">Recording interrupted</h2>
+              <p className="text-muted text-lg">The camera stream was lost. Please retake your video.</p>
+              <button onClick={handleRetakeAfterInterrupt} className="btn-primary mt-2">
+                <RetryIcon className="w-5 h-5" /> Retake
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {recordState === 'countdown' && <CountdownTimer count={countdown} />}
+
+        {recordState === 'recording' && (
+          <div className="absolute top-4 left-4 flex items-center gap-2 bg-white/90 rounded-full px-3.5 py-1.5 shadow">
+            <motion.div
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="w-2.5 h-2.5 rounded-full bg-google-red"
+            />
+            <span className="text-ink font-semibold text-sm">REC</span>
+          </div>
+        )}
+
+        {recordState === 'playback' && (
+          <div className="absolute top-4 left-4 bg-white/90 rounded-full px-3.5 py-1.5 shadow">
+            <span className="text-ink font-semibold text-sm">Preview</span>
+          </div>
+        )}
+
+        {!isReady && recordState === 'preview' && (
+          <div className="absolute inset-0 flex items-center justify-center text-white/70">Starting camera...</div>
+        )}
+      </div>
+
+      {/* Controls */}
+      {recordState !== 'interrupted' && (
+        <div className="flex items-center justify-center pt-5 min-h-[112px]">
+          {recordState === 'preview' && (
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center gap-2">
               <button
                 onClick={handleRecord}
                 disabled={!isReady}
-                className="w-24 h-24 rounded-full border-4 border-white flex items-center justify-center"
-                style={{ touchAction: 'manipulation', background: 'rgba(255,255,255,0.15)' }}
+                className="w-20 h-20 rounded-full bg-white border-4 border-line flex items-center justify-center shadow-card disabled:opacity-50 hover:border-[#EA4335]/40 transition-colors"
+                aria-label="Record"
               >
-                <div className="w-16 h-16 rounded-full bg-google-red" />
+                <div className="w-14 h-14 rounded-full bg-google-red" />
               </button>
+              <p className="text-muted text-sm">Tap to record</p>
             </motion.div>
           )}
 
           {recordState === 'countdown' && (
-            <div
-              className="w-24 h-24 rounded-full border-4 border-white/40 flex items-center justify-center"
-              style={{ background: 'rgba(255,255,255,0.05)' }}
-            >
-              <div className="w-16 h-16 rounded-full bg-google-red/40" />
+            <div className="w-20 h-20 rounded-full bg-white border-4 border-faint flex items-center justify-center">
+              <div className="w-14 h-14 rounded-full bg-google-red/30" />
             </div>
           )}
 
           {recordState === 'recording' && (
-            <ProgressRing progress={recordProgress} size={100} strokeWidth={5} color="#EA4335">
-              <div className="w-12 h-12 rounded-lg bg-google-red" />
+            <ProgressRing progress={recordProgress} size={84} strokeWidth={5} color="#EA4335">
+              <div className="w-9 h-9 rounded-lg bg-google-red" />
             </ProgressRing>
           )}
 
           {recordState === 'playback' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex gap-6"
-            >
-              <button
-                onClick={handleRetake}
-                className="px-10 py-5 rounded-full text-white text-xl font-semibold"
-                style={{
-                  minHeight: '80px',
-                  touchAction: 'manipulation',
-                  background: 'rgba(255,255,255,0.15)',
-                  border: '2px solid rgba(255,255,255,0.3)',
-                }}
-              >
-                Retake
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 w-full sm:w-auto">
+              <button onClick={handleRetake} className="btn-secondary flex-1 sm:flex-none">
+                <RetryIcon className="w-5 h-5" /> Retake
               </button>
-              <button
-                onClick={handleNext}
-                className="px-10 py-5 rounded-full text-white text-xl font-bold"
-                style={{
-                  minHeight: '80px',
-                  touchAction: 'manipulation',
-                  background: 'linear-gradient(135deg, #4285F4, #1a73e8)',
-                }}
-              >
-                Next →
+              <button onClick={handleNext} className="btn-primary flex-1 sm:flex-none">
+                Next <ArrowRight className="w-5 h-5" />
               </button>
             </motion.div>
           )}
         </div>
-      )}
-
-      {/* Back button */}
-      {recordState === 'preview' && (
-        <button
-          onClick={onBack}
-          className="absolute top-6 right-6 p-4 rounded-full bg-black/40"
-          style={{ touchAction: 'manipulation' }}
-        >
-          <span className="text-white/70 text-xl">✕</span>
-        </button>
       )}
     </div>
   );

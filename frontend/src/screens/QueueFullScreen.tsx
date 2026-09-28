@@ -41,72 +41,37 @@ export function QueueFullScreen({ onReady }: QueueFullScreenProps) {
   }, [onReady]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full px-8 text-center gap-8">
+    <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-8">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6 }}
-        className="flex flex-col items-center gap-6"
+        transition={{ duration: 0.5 }}
+        className="card flex flex-col items-center gap-5 px-6 sm:px-12 py-10 text-center max-w-lg w-full"
       >
-        {/* Pulsing capacity indicator */}
-        <motion.div
-          animate={{
-            boxShadow: [
-              '0 0 30px rgba(66,133,244,0.2)',
-              '0 0 60px rgba(66,133,244,0.5)',
-              '0 0 30px rgba(66,133,244,0.2)',
-            ],
-          }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-32 h-32 rounded-full flex items-center justify-center"
-          style={{
-            background: 'rgba(66,133,244,0.1)',
-            border: '3px solid rgba(66,133,244,0.4)',
-          }}
-        >
-          <span className="text-5xl">⏳</span>
-        </motion.div>
-
-        <h2 className="text-5xl font-extrabold text-white">
-          We're at capacity!
-        </h2>
-
-        <p className="text-white/60 text-xl max-w-md">
-          All {maxJobs} video slots are currently in use. Your turn is coming up — hang tight!
+        <h2 className="text-3xl sm:text-4xl font-bold text-ink">We're at capacity</h2>
+        <p className="text-muted text-lg">
+          All {maxJobs} video slots are in use right now. Your turn is coming up.
         </p>
 
-        {/* Capacity indicator */}
         <div className="flex items-center gap-3 mt-2">
           {Array.from({ length: maxJobs }).map((_, i) => (
             <motion.div
               key={i}
-              animate={
-                i < activeJobs
-                  ? { opacity: [0.5, 1, 0.5] }
-                  : { opacity: 0.15 }
-              }
-              transition={
-                i < activeJobs
-                  ? { duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.3 }
-                  : {}
-              }
-              className="w-6 h-6 rounded-full"
-              style={{
-                background: i < activeJobs ? '#4285F4' : 'rgba(255,255,255,0.15)',
-              }}
+              animate={i < activeJobs ? { opacity: [0.5, 1, 0.5] } : { opacity: 1 }}
+              transition={i < activeJobs ? { duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.3 } : {}}
+              className="w-12 h-3 rounded-full"
+              style={{ background: i < activeJobs ? '#34A853' : '#E8EAED' }}
             />
           ))}
         </div>
-        <p className="text-white/40 text-base">
-          {activeJobs}/{maxJobs} videos processing
-        </p>
+        <p className="text-muted text-sm">{activeJobs}/{maxJobs} videos processing</p>
 
         <motion.p
-          animate={{ opacity: [0.3, 0.7, 0.3] }}
+          animate={{ opacity: [0.4, 0.9, 0.4] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          className="text-white/40 text-sm mt-4"
+          className="text-muted text-sm"
         >
-          Checking for available slots...
+          Checking for a free slot...
         </motion.p>
       </motion.div>
     </div>
