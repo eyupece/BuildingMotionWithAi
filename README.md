@@ -93,6 +93,7 @@ BACKEND_URL=$(gcloud run services describe gemini-motion-lab-backend --region us
 ```bash
 cd ../frontend
 echo "VITE_API_BASE=$BACKEND_URL" > .env
+echo "VITE_EVENT=kastamonu" >> .env   # isteğe bağlı: etkinlik seçimi, aşağıya bak
 gcloud run deploy gemini-motion-lab-frontend --source . --region us-central1 \
   --allow-unauthenticated --min-instances 1 --max-instances 3 --port 8080 \
   --project $GOOGLE_CLOUD_PROJECT
@@ -109,14 +110,21 @@ echo "Demo hazır: $FRONTEND_URL"
 
 > **Maliyet notu:** Veo ve Nano Banana çağrıları ücretlidir. Denemen bittiğinde Cloud Run servislerini ve GCS bucket'ını silmeyi unutma; kodda otomatik silme yok.
 
-## DevFest branch'leri
+## DevFest etkinlikleri
 
-`main` ortak demo kodunu ve sunumu taşır. Her DevFest'in kendine özel teması (o şehre ait konum ve animasyon) ayrı bir branch'te yaşar:
+Her DevFest'in kendi avatar stili ve konum teması var. Hepsi `main`'de duruyor; hangisinin görüneceğini frontend'i build ederken `VITE_EVENT` belirler. Seçilen etkinliğin kartları ilk sıraya gelir, diğer şehirlerinkiler gizli kalır ve karşılama ekranında etkinliğin adı yazar. `VITE_EVENT` boşsa orijinal codelab kartları görünür.
 
-| DevFest | Branch |
-|---|---|
-| DevFest Kastamonu 2026 | `devfest/kastamonu-2026` (hazırlanıyor) |
-| DevFest Trabzon 2026 | `devfest/trabzon-2026` (hazırlanıyor) |
+| Etkinlik | `VITE_EVENT` | Avatar stili | Konum teması |
+|---|---|---|---|
+| DevFest Kastamonu 2026 | `kastamonu` | Kastamonu Gravür (sepya gravür, Anadolu kitap illüstrasyonu) | Kastamonu (kale, konaklar, Saat Kulesi, Nasrullah Camii) |
+| DevFest Trabzon 2026 | `trabzon` | Rembrandt (17. yüzyıl Hollanda yağlı boya portresi) | Trabzon (Karadeniz limanı, Ayasofya, Sümela, çay bahçeleri) |
+
+Pipeline her etkinlikte aynıdır; etkinlik yalnızca Nano Banana ve Veo prompt'larına giren stil ve konum metnini değiştirir.
+
+**Yeni etkinlik eklemek:**
+1. `backend/app/events/` altındaki bir dosyayı kopyala, prompt'ları yaz ve `backend/app/events/__init__.py` içine kaydet.
+2. `frontend/src/events.ts` içine kartlarını ekle.
+3. İki önizleme görselini (640x640) `frontend/public/previews/` altına koy.
 
 ## Sunum
 

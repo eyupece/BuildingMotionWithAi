@@ -1,5 +1,7 @@
 from typing import Any
 
+from app.events import EVENTS
+
 
 # Location/theme metadata — background environment descriptions for Veo
 _LOCATION_META: dict[str, dict[str, str]] = {
@@ -103,6 +105,10 @@ _STYLE_META: dict[str, dict[str, str]] = {
         "atmosphere": "colorful plastic bricks with realistic sheen, visible studs and block edges, toy product aesthetic, stop-motion toy animation style",
     },
 }
+
+for _event in EVENTS.values():
+    _LOCATION_META[_event.LOCATION_KEY] = _event.LOCATION
+    _STYLE_META[_event.AVATAR_STYLE_KEY] = _event.VIDEO_STYLE
 
 _DEFAULT_STYLE = _STYLE_META["pixel-hero"]
 
