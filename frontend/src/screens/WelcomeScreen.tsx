@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
+import { ACTIVE_EVENT } from '../events';
 
 interface WelcomeScreenProps {
   onStart: () => void;
@@ -119,6 +120,17 @@ export function WelcomeScreen({ onStart, onDebugTap }: WelcomeScreenProps) {
           Record your move. See yourself as AI.
         </motion.p>
 
+        {ACTIVE_EVENT && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="text-lg uppercase tracking-[0.3em] text-white/50"
+          >
+            {ACTIVE_EVENT.title}
+          </motion.p>
+        )}
+
         {/* Privacy consent checkbox */}
         <motion.label
           initial={{ opacity: 0 }}
@@ -151,7 +163,7 @@ export function WelcomeScreen({ onStart, onDebugTap }: WelcomeScreenProps) {
             )}
           </span>
           <span className="text-white/70 text-base leading-relaxed">
-            I understand this demo temporarily records my face, and that all video is automatically deleted within 24 hours.
+            I understand this demo records my face and processes the video with AI models.
           </span>
           {/* Hidden native checkbox for accessibility */}
           <input
