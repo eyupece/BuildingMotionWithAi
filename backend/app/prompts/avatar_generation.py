@@ -1,4 +1,26 @@
 AVATAR_STYLES: dict[str, dict] = {
+    "rembrandt": {
+        "name": "Rembrandt Portrait",
+        "description": (
+            "Museum-quality 17th-century Dutch Golden Age oil painting in the manner of Rembrandt van Rijn, "
+            "as if the person sat for a master painter in Amsterdam. Identity comes first: keep the exact face "
+            "shape, eyes, eyebrows, nose, mouth, jawline, hairline, hairstyle, facial hair, skin tone, moles and "
+            "natural asymmetry. Do not beautify, idealize, age, de-age or create a generic Rembrandt face, and keep "
+            "the person's body proportions. Replace modern clothing with historically plausible Dutch Baroque dress "
+            "from about 1620-1680, choosing ONE wardrobe direction instead of a default black coat with a large white "
+            "collar: for example an olive velvet doublet with a soft falling collar, a burgundy merchant coat over a "
+            "linen shirt, a scholar's black robe with a narrow linen collar, a buff leather jerkin, a fur-trimmed wool "
+            "mantle, a dark bodice with a square neckline and linen chemise, or a deep blue satin gown with lace cuffs; "
+            "restrained pearl or gold accents only. Classic Rembrandt lighting: warm directional light on one side of "
+            "the face with the small triangle of light under the eye on the shadow side, dramatic chiaroscuro, deep "
+            "umber shadows, eyes clearly readable. Dark atmospheric brown-black background with a subtle warm gradient. "
+            "Palette of raw and burnt umber, burnt sienna, yellow ochre, warm ivory, muted vermilion and subtle gold. "
+            "Visible controlled brushwork, subtle impasto on lit areas, translucent glazing in skin shadows, natural "
+            "skin texture, slight canvas grain. No fantasy costumes, crowns or armor, no airbrushed or plastic skin, "
+            "no modern digital-art or filtered-photo look, no extra fingers."
+        ),
+        "emoji": "🖼️",
+    },
     "pixel-hero": {
         "name": "Pixel Hero",
         "description": "Retro 16-bit pixel art hero. Blocky pixels with vibrant primary colors, classic arcade game aesthetic like vintage side-scrollers. Bold heroic character with dynamic action pose, sharp pixel edges, no anti-aliasing, dramatic pixel shading.",

@@ -3,6 +3,20 @@ from typing import Any
 
 # Location/theme metadata — background environment descriptions for Veo
 _LOCATION_META: dict[str, dict[str, str]] = {
+    "trabzon": {
+        "name": "Trabzon",
+        "background": (
+            "in a dim 17th-century style stone chamber of an old Trabzon mansion, painted as a Rembrandt-era "
+            "Dutch Golden Age oil painting: a tall arched window opens onto the Black Sea harbor of Trabzon with "
+            "wooden sailing ships and fishing boats on dark green-grey water, the Byzantine Hagia Sophia of Trabzon "
+            "with its stone dome standing near the shore, ancient city walls climbing the ridge, steep hills covered "
+            "in terraced tea gardens disappearing into rolling Black Sea mist, and far away the Sumela Monastery "
+            "clinging to a sheer forested cliff; inside, a heavy oak table with a brass lantern, a copper tea kettle, "
+            "a woven basket of hazelnuts and a folded wool cloth, warm golden light falling through the window "
+            "while the rest of the room sinks into deep umber shadow, dramatic chiaroscuro, visible oil brushwork "
+            "and canvas texture, palette of burnt umber, sienna, ochre, muted moss green and warm gold"
+        ),
+    },
     "lunar-surface": {
         "name": "Lunar Surface",
         "background": (
@@ -66,6 +80,12 @@ _DEFAULT_BACKGROUND = "a clean neutral studio background with soft ambient light
 
 # Style metadata used when building Veo prompts
 _STYLE_META: dict[str, dict[str, str]] = {
+    "rembrandt": {
+        "name": "Rembrandt Portrait",
+        "camera": "front-facing medium shot",
+        "description": "animated 17th-century Dutch Baroque oil painting figure in the manner of Rembrandt, dressed in period doublet or gown, painted with visible brushstrokes and glazing, clearly a moving oil painting NOT a real human",
+        "atmosphere": "Rembrandt chiaroscuro lighting, warm golden highlights against deep umber shadows, visible oil brushwork and canvas texture, museum painting that has come to life",
+    },
     "pixel-hero": {
         "name": "Pixel Hero",
         "camera": "medium shot",
