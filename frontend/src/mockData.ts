@@ -2,6 +2,14 @@ import type { AvatarStyle, LocationTheme } from './types';
 
 export const AVATAR_STYLES: AvatarStyle[] = [
   {
+    id: 'kastamonu-gravur',
+    name: 'Kastamonu Gravür',
+    description: 'Vintage Anatolian engraving',
+    emoji: '🪡',
+    color: '#8B5E34',
+    previewImage: '/previews/kastamonu-gravur.png',
+  },
+  {
     id: 'pixel-hero',
     name: 'Pixel Hero',
     description: 'Retro pixel data scientist',
@@ -41,17 +49,17 @@ export const AVATAR_STYLES: AvatarStyle[] = [
     color: '#9C27B0',
     previewImage: '/previews/manga-ink.png',
   },
-  {
-    id: 'brick-build',
-    name: 'Brick Build',
-    description: 'Brick-built Google G',
-    emoji: '🧱',
-    color: '#FF6D00',
-    previewImage: '/previews/brick-build.png',
-  },
 ];
 
 export const LOCATION_THEMES: LocationTheme[] = [
+  {
+    id: 'kastamonu',
+    name: 'Kastamonu',
+    description: 'Castle, konaks and clock tower',
+    emoji: '🏰',
+    color: '#A0783C',
+    previewImage: '/previews/kastamonu.png',
+  },
   {
     id: 'lunar-surface',
     name: 'Lunar Surface',
@@ -91,14 +99,6 @@ export const LOCATION_THEMES: LocationTheme[] = [
     emoji: '🌲',
     color: '#34A853',
     previewImage: '/previews/enchanted-forest.png',
-  },
-  {
-    id: 'underwater-palace',
-    name: 'Underwater Palace',
-    description: 'Ancient temple beneath the sea',
-    emoji: '🌊',
-    color: '#00BCD4',
-    previewImage: '/previews/underwater-palace.png',
   },
 ];
 

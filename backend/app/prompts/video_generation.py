@@ -3,6 +3,22 @@ from typing import Any
 
 # Location/theme metadata — background environment descriptions for Veo
 _LOCATION_META: dict[str, dict[str, str]] = {
+    "kastamonu": {
+        "name": "Kastamonu",
+        "background": (
+            "in the old town of Kastamonu, Anatolia, drawn as an antique sepia engraving: a cobblestone "
+            "street lined with two-storey Ottoman timber-framed mansions with white lime-plastered walls, "
+            "dark wooden beams, projecting carved bay windows and red clay tile roofs stepping up the hillside, "
+            "the medieval Kastamonu Castle crowning the rocky hill above with its stone towers and ramparts, "
+            "the slender 19th-century Clock Tower on the opposite slope, the domes and minaret of the "
+            "Nasrullah Mosque with its marble fountain beside a small stone bridge over the Karaçomak stream, "
+            "hand-woven Kastamonu textiles in madder red, indigo and ochre hanging from a wooden balcony, "
+            "copper pots and a carved walnut door in the foreground, the forested ridges of the Ilgaz "
+            "Mountains fading into warm haze, soft late-afternoon sunlight, fine cross-hatched linework, "
+            "aged paper texture with faint Ottoman floral ornaments in the corners, palette of sepia, brown, "
+            "bronze and faded sage green, nostalgic vintage postcard atmosphere"
+        ),
+    },
     "lunar-surface": {
         "name": "Lunar Surface",
         "background": (
@@ -66,6 +82,12 @@ _DEFAULT_BACKGROUND = "a clean neutral studio background with soft ambient light
 
 # Style metadata used when building Veo prompts
 _STYLE_META: dict[str, dict[str, str]] = {
+    "kastamonu-gravur": {
+        "name": "Kastamonu Engraving",
+        "camera": "front-facing medium shot",
+        "description": "animated antique engraving illustration character drawn in fine sepia cross-hatched ink lines on aged paper, like a figure from a 19th-century Anatolian book plate, clearly an illustration NOT a real human",
+        "atmosphere": "vintage copperplate engraving look, warm sepia, brown, bronze and faded sage green tones, subtle worn paper grain, traditional Anatolian and Ottoman ornament details, hand-drawn line animation",
+    },
     "pixel-hero": {
         "name": "Pixel Hero",
         "camera": "medium shot",

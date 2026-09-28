@@ -1,4 +1,20 @@
 AVATAR_STYLES: dict[str, dict] = {
+    "kastamonu-gravur": {
+        "name": "Kastamonu Engraving",
+        "description": (
+            "Antique hand-engraved book illustration from 19th-century Anatolia, like a plate from an old "
+            "travel book or a vintage Ottoman-era postcard. Fine cross-hatched ink linework and copperplate "
+            "engraving detail on aged, slightly worn cream paper with subtle foxing and grain. Warm muted palette "
+            "of sepia, walnut brown, antique bronze and faded sage green, with only small accents of madder red "
+            "and indigo taken from traditional Kastamonu hand-woven textiles. The person wears their own clothing "
+            "re-drawn in engraved line, with a small kilim-pattern border detail on the collar or cuffs. "
+            "Plain aged-paper background with delicate Ottoman floral corner ornaments (tulips, carnations, "
+            "rumi scrolls). Soft warm window light, calm "
+            "nostalgic mood. Flat printed illustration only: no photorealism, no 3D rendering, no glossy or "
+            "saturated modern colors."
+        ),
+        "emoji": "🪡",
+    },
     "pixel-hero": {
         "name": "Pixel Hero",
         "description": "Retro 16-bit pixel art hero. Blocky pixels with vibrant primary colors, classic arcade game aesthetic like vintage side-scrollers. Bold heroic character with dynamic action pose, sharp pixel edges, no anti-aliasing, dramatic pixel shading.",

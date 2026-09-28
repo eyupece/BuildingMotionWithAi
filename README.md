@@ -115,7 +115,7 @@ echo "Demo hazır: $FRONTEND_URL"
 
 | DevFest | Branch |
 |---|---|
-| DevFest Kastamonu 2026 | `devfest/kastamonu-2026` (hazırlanıyor) |
+| DevFest Kastamonu 2026 | `devfest/kastamonu-2026`: "Kastamonu Gravür" avatar stili ve "Kastamonu" konum teması |
 | DevFest Trabzon 2026 | `devfest/trabzon-2026` (hazırlanıyor) |
 
 ## Sunum
