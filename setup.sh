@@ -67,6 +67,15 @@ gcloud storage buckets update "gs://${BUCKET_NAME}" --cors-file=/tmp/cors.json
 rm /tmp/cors.json
 echo "   ✅ CORS configured"
 
+# New projects: Cloud Run source deploys build with the default compute account
+echo ""
+echo "🏗️  Granting Cloud Run build permission..."
+PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --role="roles/run.builder" --condition=None --quiet > /dev/null
+echo "   ✅ roles/run.builder granted"
+
 # ── Step 3: Generate .env file ──────────────────────────────────────────────
 echo ""
 echo "📝 Generating .env file..."
