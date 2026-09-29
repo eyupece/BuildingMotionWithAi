@@ -30,10 +30,12 @@ Veo ve Nano Banana ücretli. Denemen bitince Cloud Run servislerini ve bucket'ı
 
 ## DevFest temaları
 
-- **Kastamonu:** Eski bir gravür gibi, sepya tonlarında bir avatar. Arka planda kale, konaklar ve Saat Kulesi.
-- **Trabzon:** Rembrandt tarzı yağlı boya bir portre. Arka planda Karadeniz, Ayasofya ve Sümela.
+Her DevFest'te o şehre ait bir dünya ekleniyor. Avatar stilleri codelab'dekilerle aynı, yani Kastamonu sokaklarında bir Pixel Hero da olabilirsin, 3D figür de.
 
-Temalar sadece prompt'ları değiştiriyor, pipeline her yerde aynı. Prompt'lar `backend/app/events/` klasöründe.
+- **Kastamonu:** Konaklar, kale ve Saat Kulesi.
+- **Trabzon:** Çay bahçeleri, liman, Ayasofya ve Sümela.
+
+Şehir prompt'ları `backend/app/events/` klasöründe.
 
 ## Sunum
 

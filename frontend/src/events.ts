@@ -1,23 +1,16 @@
-import type { AvatarStyle, LocationTheme } from './types';
+import type { LocationTheme } from './types';
 
 // DevFest themes, picked with VITE_EVENT in frontend/.env
+// Only the location is event specific. Avatar styles stay the codelab ones,
+// so people can be a Pixel Hero in Kastamonu.
 export interface DevFestEvent {
   title: string;
-  avatarStyle: AvatarStyle;
   locationTheme: LocationTheme;
 }
 
 export const EVENTS: Record<string, DevFestEvent> = {
   kastamonu: {
     title: 'DevFest Kastamonu 2026',
-    avatarStyle: {
-      id: 'kastamonu-gravur',
-      name: 'Kastamonu Gravür',
-      description: 'Vintage Anatolian engraving',
-      emoji: '🪡',
-      color: '#8B5E34',
-      previewImage: '/previews/kastamonu-gravur.png',
-    },
     locationTheme: {
       id: 'kastamonu',
       name: 'Kastamonu',
@@ -29,14 +22,6 @@ export const EVENTS: Record<string, DevFestEvent> = {
   },
   trabzon: {
     title: 'DevFest Trabzon 2026',
-    avatarStyle: {
-      id: 'rembrandt',
-      name: 'Rembrandt',
-      description: 'Dutch Golden Age oil portrait',
-      emoji: '🖼️',
-      color: '#7A4A24',
-      previewImage: '/previews/rembrandt.png',
-    },
     locationTheme: {
       id: 'trabzon',
       name: 'Trabzon',

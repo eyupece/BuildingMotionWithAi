@@ -34,19 +34,16 @@ VIDEO_STYLE = {
 
 LOCATION_KEY = 'kastamonu'
 
+# No rendering style here on purpose: the avatar style (Pixel Hero, 3D Figurine...)
+# decides how the scene is drawn, the location only says where it is.
 LOCATION = {
     "name": 'Kastamonu',
     "background": (
-        'in the old town of Kastamonu, Anatolia, drawn as an antique sepia engraving: a cobblestone '
-        'street lined with two-storey Ottoman timber-framed mansions with white lime-plastered walls, '
-        'dark wooden beams, projecting carved bay windows and red clay tile roofs stepping up the '
-        'hillside, the medieval Kastamonu Castle crowning the rocky hill above with its stone towers and '
-        'ramparts, the slender 19th-century Clock Tower on the opposite slope, the domes and minaret of '
-        'the Nasrullah Mosque with its marble fountain beside a small stone bridge over the Karaçomak '
-        'stream, hand-woven Kastamonu textiles in madder red, indigo and ochre hanging from a wooden '
-        'balcony, copper pots and a carved walnut door in the foreground, the forested ridges of the '
-        'Ilgaz Mountains fading into warm haze, soft late-afternoon sunlight, fine cross-hatched '
-        'linework, aged paper texture with faint Ottoman floral ornaments in the corners, palette of '
-        'sepia, brown, bronze and faded sage green, nostalgic vintage postcard atmosphere'
+        'on a cobblestone street in the old town of Kastamonu, Turkey, standing in the foreground at '
+        'street level: two-storey Ottoman timber-framed mansions with white walls, dark wooden beams, '
+        'carved bay windows and red tile roofs line the street, the medieval Kastamonu Castle with its '
+        'stone towers crowns the rocky hill behind, the slender old Clock Tower rises on the opposite '
+        'slope, colorful hand-woven Kastamonu textiles hang from a wooden balcony, forested Ilgaz '
+        'mountains in the distance, warm late-afternoon sunlight, lively and welcoming'
     ),
 }

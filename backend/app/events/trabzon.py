@@ -43,18 +43,14 @@ VIDEO_STYLE = {
 
 LOCATION_KEY = 'trabzon'
 
+# Style-neutral like Kastamonu: the avatar style decides how it is drawn.
 LOCATION = {
     "name": 'Trabzon',
     "background": (
-        'in a dim 17th-century style stone chamber of an old Trabzon mansion, painted as a Rembrandt-era '
-        'Dutch Golden Age oil painting: a tall arched window opens onto the Black Sea harbor of Trabzon '
-        'with wooden sailing ships and fishing boats on dark green-grey water, the Byzantine Hagia Sophia'
-        ' of Trabzon with its stone dome standing near the shore, ancient city walls climbing the ridge, '
-        'steep hills covered in terraced tea gardens disappearing into rolling Black Sea mist, and far '
-        'away the Sumela Monastery clinging to a sheer forested cliff; inside, a heavy oak table with a '
-        'brass lantern, a copper tea kettle, a woven basket of hazelnuts and a folded wool cloth, warm '
-        'golden light falling through the window while the rest of the room sinks into deep umber shadow,'
-        ' dramatic chiaroscuro, visible oil brushwork and canvas texture, palette of burnt umber, sienna,'
-        ' ochre, muted moss green and warm gold'
+        'on a hillside terrace above Trabzon, Turkey, standing in the foreground: bright green terraced '
+        'tea gardens roll down toward the Black Sea harbor with fishing boats, the Byzantine Hagia Sophia '
+        'of Trabzon with its stone dome near the shore, old city walls climbing the ridge, and far away '
+        'the Sumela Monastery clinging to a steep forested cliff, soft Black Sea mist drifting over the '
+        'hills, fresh daylight'
     ),
 }
