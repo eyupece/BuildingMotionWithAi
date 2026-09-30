@@ -46,11 +46,13 @@ KIT_LOCATION = {
     "camera": 'static front view of the loom, the woven kilim with the character fills most of the frame',
     "background": (
         'the character lives inside a large kilim stretched on a wooden hand loom and moves within the '
-        'woven fabric, in the weaving room of an old Kastamonu mansion: a carved walnut loom frame with '
-        'threads in Google blue, red, yellow and green hanging from the top beam, balls of blue, red, '
-        'yellow and green wool on a small wooden bench, a patterned kilim rug on the wooden floor, copper '
-        'coffee pots on a side table, a window showing the hillside of red-roofed Kastamonu houses and '
-        'the castle, warm golden afternoon light'
+        'woven fabric, the whole upper body woven into the kilim with no loose threads across the face, '
+        'in the weaving room of an old Ottoman-era Kastamonu mansion: dark carved walnut wall panels and '
+        'ceiling beams, a small wooden-framed window showing the hillside of red-roofed Kastamonu houses '
+        'and the castle, a carved walnut loom frame with threads in Google blue, red, yellow and green '
+        'hanging from the top beam, balls of blue, red, yellow and green wool on a small wooden bench, a '
+        'patterned kilim rug on the wooden floor, copper coffee pots on a side table, no modern objects, '
+        'warm golden late-afternoon light falling through the window, cozy and nostalgic'
     ),
 }
 
