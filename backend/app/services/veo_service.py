@@ -80,6 +80,7 @@ async def generate_video(
         prompt=prompt,
         avatar_image_gcs_uri=avatar_image_gcs_uri,
         video_id=video_id,
+        location_theme=location_theme,
     )
     logger.info("Veo model used: %s  operation_id=%s", _VEO_MODEL, op_id)
     _operations[op_id] = (operation, video_id)
@@ -94,12 +95,32 @@ async def _generate_with_retry(
     prompt: str,
     avatar_image_gcs_uri: str,
     video_id: str,
+    location_theme: str = "",
+    use_scene: bool = True,
 ) -> Any:
     """Attempt Veo generation up to _MAX_RETRIES times with exponential backoff."""
     import asyncio
     from google.genai.types import GenerateVideosConfig, Image, VideoGenerationReferenceImage
 
+    from ..events import scene_image
+
     _API_TIMEOUT_S = 120  # 2 min max per attempt
+
+    references = [
+        VideoGenerationReferenceImage(
+            image=Image(gcs_uri=avatar_image_gcs_uri, mime_type="image/png"),
+            reference_type="ASSET",
+        )
+    ]
+    scene = scene_image(location_theme) if use_scene else None
+    if scene:
+        references.append(
+            VideoGenerationReferenceImage(
+                image=Image(image_bytes=scene[0], mime_type=scene[1]),
+                reference_type="ASSET",
+            )
+        )
+        logger.info("Using scene reference photo for %s", location_theme)
 
     last_error: Exception | None = None
     for attempt in range(1, _MAX_RETRIES + 1):
@@ -109,15 +130,7 @@ async def _generate_with_retry(
                 attempt, _MAX_RETRIES, _VEO_MODEL, _API_TIMEOUT_S,
             )
             config = GenerateVideosConfig(
-                reference_images=[
-                    VideoGenerationReferenceImage(
-                        image=Image(
-                            gcs_uri=avatar_image_gcs_uri,
-                            mime_type="image/png",
-                        ),
-                        reference_type="ASSET",
-                    )
-                ],
+                reference_images=references,
                 aspect_ratio="16:9",
                 duration_seconds=8,
                 generate_audio=False,

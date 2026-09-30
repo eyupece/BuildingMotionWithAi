@@ -46,6 +46,7 @@ LOCATION_KEY = 'trabzon'
 # Style-neutral like Kastamonu: the avatar style decides how it is drawn.
 LOCATION = {
     "name": 'Trabzon',
+    "camera": 'medium-wide shot at eye level, full body visible, character in the foreground with the city clearly behind',
     "background": (
         'on a hillside terrace above Trabzon, Turkey, standing in the foreground: bright green terraced '
         'tea gardens roll down toward the Black Sea harbor with fishing boats, the Byzantine Hagia Sophia '

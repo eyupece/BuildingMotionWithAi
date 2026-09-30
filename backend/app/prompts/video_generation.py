@@ -129,6 +129,9 @@ def build_video_prompt(
 
     location = _LOCATION_META.get(location_theme)
     background = location["background"] if location else _DEFAULT_BACKGROUND
+    # City scenes pick their own framing; the webcam's close-up hides the place
+    if location and location.get("camera"):
+        camera_angle = location["camera"]
 
     phases = motion_analysis.get("phases", [])
     choreography = _build_choreography(phases)
