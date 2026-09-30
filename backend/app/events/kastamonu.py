@@ -17,9 +17,9 @@ AVATAR_STYLE = {
         'hairstyle are woven in careful detail. Their own clothes are re-woven in their real colors. '
         'Palette of natural root dyes: madder red, indigo blue, walnut brown, saffron yellow, olive green '
         'and undyed cream wool, with a few bright Google blue, red, yellow and green threads as accents. '
-        'A narrow border of traditional kilim motifs (elibelinde, ram horn, eight-pointed star) runs '
-        'around the edges on a plain cream woven background. A flat textile artwork, not a 3D render, '
-        'not a photo.'
+        'Small traditional kilim motifs (elibelinde, ram horn, eight-pointed star) are woven into the '
+        'clothing. The figure stands on its own like a woven character, not a rectangular rug, on a plain '
+        'cream background. Textile artwork, not a 3D render, not a photo.'
     ),
     "emoji": '🧶',
 }
@@ -33,8 +33,9 @@ VIDEO_STYLE = {
     ),
     "atmosphere": (
         'hand-woven wool texture with visible warp and weft threads, madder red, indigo, saffron and cream '
-        'root-dye colors with bright Google blue, red, yellow and green thread accents, loose threads '
-        'swaying gently with the movement, warm golden window light, like a vintage illustrated poster'
+        'root-dye colors with bright Google blue, red, yellow and green thread accents, the woven body '
+        'bends and moves freely like a living character, warm golden window light, like a vintage '
+        'illustrated poster'
     ),
 }
 
@@ -43,16 +44,18 @@ KIT_LOCATION_KEY = 'kastamonu-tezgah'
 
 KIT_LOCATION = {
     "name": 'Dokuma Tezgahı',
-    "camera": 'static front view of the loom, the woven kilim with the character fills most of the frame',
+    # The figure used to sit inside the kilim on the loom, and Veo moved the loom
+    # instead of the person. It now stands in front of the loom and does the move.
+    "camera": 'medium-wide shot at eye level, full body visible, the woven character in the foreground and the loom behind',
     "background": (
-        'the character lives inside a large kilim stretched on a wooden hand loom and moves within the '
-        'woven fabric, the whole upper body woven into the kilim with no loose threads across the face, '
-        'in the weaving room of an old Ottoman-era Kastamonu mansion: dark carved walnut wall panels and '
-        'ceiling beams, a small wooden-framed window showing the hillside of red-roofed Kastamonu houses '
-        'and the castle, a carved walnut loom frame with threads in Google blue, red, yellow and green '
-        'hanging from the top beam, balls of blue, red, yellow and green wool on a small wooden bench, a '
-        'patterned kilim rug on the wooden floor, copper coffee pots on a side table, no modern objects, '
-        'warm golden late-afternoon light falling through the window, cozy and nostalgic'
+        'standing on the wooden floor in front of a large wooden hand loom in the weaving room of an old '
+        'Ottoman-era Kastamonu mansion, the character is the woven figure that has just come to life from '
+        'the half-finished kilim on the loom behind it: dark carved walnut wall panels and ceiling beams, '
+        'a small wooden-framed window showing the hillside of red-roofed Kastamonu houses and the castle, '
+        'threads in Google blue, red, yellow and green hanging from the top beam of the loom, balls of '
+        'blue, red, yellow and green wool on a small wooden bench, a patterned kilim rug on the floor, '
+        'copper coffee pots on a side table, no modern objects, warm golden late-afternoon light. The loom '
+        'and the room stay completely still; only the character moves'
     ),
 }
 
