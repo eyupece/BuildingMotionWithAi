@@ -153,6 +153,15 @@ def build_video_prompt(
     prompt += (
         f"The motion quality is {overall_style}. "
         f"Setting: {background}. "
+    )
+    # City scenes are written without a look of their own, so draw them like the
+    # character. Otherwise Veo renders a photo street behind a pixel avatar.
+    if location and location.get("match_style"):
+        prompt += (
+            f"The whole scene, background, buildings and sky included, is drawn in the same "
+            f"{style_name} style as the character, one consistent artwork, not a photo backdrop. "
+        )
+    prompt += (
         f"{camera_angle}, smooth and consistent animation. "
         f"{atmosphere}. "
         f"The character is fully animated in {style_name} style throughout, not realistic or photographic. "

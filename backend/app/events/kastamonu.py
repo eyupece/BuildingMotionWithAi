@@ -38,6 +38,7 @@ LOCATION_KEY = 'kastamonu'
 # decides how the scene is drawn, the location only says where it is.
 LOCATION = {
     "name": 'Kastamonu',
+    "match_style": True,
     "camera": 'medium-wide shot at eye level, full body visible, character in the foreground with the city clearly behind',
     "background": (
         'on a cobblestone street in the old town of Kastamonu, Turkey, standing in the foreground at '
