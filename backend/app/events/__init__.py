@@ -1,4 +1,4 @@
-"""DevFest themes: one location per event."""
+"""DevFest themes, one module per event."""
 
 from pathlib import Path
 

@@ -13,6 +13,7 @@ import { Header } from './components/Header';
 import { Pipeline } from './components/Pipeline';
 import { CloseIcon } from './components/Icons';
 import { API_BASE, getLastApiError } from './hooks/useApi';
+import { ACTIVE_EVENT } from './events';
 import type { AppState, Screen, AvatarStyle, LocationTheme } from './types';
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -213,8 +214,15 @@ export default function App() {
   }, []);
 
   const handleStyleSelect = useCallback((style: AvatarStyle) => {
-    setTransitionType('slideLeft');
     dispatch({ type: 'SET_STYLE', style });
+    // The event kit brings its own scene, so there's no world to pick
+    const kit = ACTIVE_EVENT?.kit;
+    if (kit && style.id === kit.avatarStyle.id) {
+      setTransitionType('fadeScale');
+      dispatch({ type: 'SET_THEME', theme: kit.theme });
+    } else {
+      setTransitionType('slideLeft');
+    }
   }, []);
 
   const handleThemeSelect = useCallback((theme: LocationTheme) => {

@@ -105,7 +105,9 @@ const BASE_LOCATION_THEMES: LocationTheme[] = [
   },
 ];
 
-export const AVATAR_STYLES: AvatarStyle[] = BASE_AVATAR_STYLES;
+export const AVATAR_STYLES: AvatarStyle[] = ACTIVE_EVENT?.kit
+  ? [ACTIVE_EVENT.kit.avatarStyle, ...BASE_AVATAR_STYLES].slice(0, GRID_SIZE)
+  : BASE_AVATAR_STYLES;
 
 export const LOCATION_THEMES: LocationTheme[] = ACTIVE_EVENT
   ? [ACTIVE_EVENT.locationTheme, ...BASE_LOCATION_THEMES].slice(0, GRID_SIZE)

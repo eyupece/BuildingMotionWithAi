@@ -1,11 +1,16 @@
-import type { LocationTheme } from './types';
+import type { AvatarStyle, LocationTheme } from './types';
 
-// DevFest themes, picked with VITE_EVENT in frontend/.env
-// Only the location is event specific. Avatar styles stay the codelab ones,
-// so people can be a Pixel Hero in Kastamonu.
+// DevFest themes, picked with VITE_EVENT in frontend/.env.
+// locationTheme is a world for the codelab styles (a Pixel Hero in Kastamonu).
+// kit is the event's own look from its poster: picking its style skips the
+// world step and always uses its own scene.
 export interface DevFestEvent {
   title: string;
   locationTheme: LocationTheme;
+  kit?: {
+    avatarStyle: AvatarStyle;
+    theme: LocationTheme;
+  };
 }
 
 export const EVENTS: Record<string, DevFestEvent> = {
@@ -18,6 +23,24 @@ export const EVENTS: Record<string, DevFestEvent> = {
       emoji: '🏰',
       color: '#A0783C',
       previewImage: '/previews/kastamonu.png',
+    },
+    kit: {
+      avatarStyle: {
+        id: 'kastamonu-dokuma',
+        name: 'Kastamonu Dokuma',
+        description: 'Woven into a Kastamonu kilim',
+        emoji: '🧶',
+        color: '#A23B2A',
+        previewImage: '/previews/kastamonu-dokuma.png',
+      },
+      theme: {
+        id: 'kastamonu-tezgah',
+        name: 'a Kastamonu kilim',
+        description: 'Weaving room of an old Kastamonu mansion',
+        emoji: '🧶',
+        color: '#A23B2A',
+        previewImage: '/previews/kastamonu-dokuma.png',
+      },
     },
   },
   trabzon: {

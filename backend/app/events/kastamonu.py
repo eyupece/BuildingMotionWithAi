@@ -1,34 +1,56 @@
-"""DevFest Kastamonu 2026: avatar style and location theme."""
+"""DevFest Kastamonu 2026.
 
-AVATAR_STYLE_KEY = 'kastamonu-gravur'
+The poster idea: a Kastamonu weaver weaves the speaker into a kilim, with
+Google colored threads on the loom. The "Dokuma" kit turns you into that
+kilim figure, and the Kastamonu street is a world for the other styles.
+"""
+
+AVATAR_STYLE_KEY = 'kastamonu-dokuma'
 
 AVATAR_STYLE = {
-    "name": 'Kastamonu Engraving',
+    "name": 'Kastamonu Dokuma',
     "description": (
-        'Antique hand-engraved book illustration from 19th-century Anatolia, like a plate from an old '
-        'travel book or a vintage Ottoman-era postcard. Fine cross-hatched ink linework and copperplate '
-        'engraving detail on aged, slightly worn cream paper with subtle foxing and grain. Warm muted '
-        'palette of sepia, walnut brown, antique bronze and faded sage green, with only small accents of '
-        'madder red and indigo taken from traditional Kastamonu hand-woven textiles. The person wears '
-        'their own clothing re-drawn in engraved line, with a small kilim-pattern border detail on the '
-        'collar or cuffs. Plain aged-paper background with delicate Ottoman floral corner ornaments '
-        '(tulips, carnations, rumi scrolls). Soft warm window light, calm nostalgic mood. Flat printed '
-        'illustration only: no photorealism, no 3D rendering, no glossy or saturated modern colors.'
+        'Hand-woven Anatolian kilim tapestry, like a traditional Kastamonu flat-weave. The whole figure '
+        'is made of visible woven wool threads on a loom grid: every shape is built from small stepped '
+        'warp-and-weft blocks, so edges are slightly stair-stepped like hand weaving, with real wool '
+        'texture and soft fibre fuzz. Keep the face clearly recognizable: face shape, glasses, beard and '
+        'hairstyle are woven in careful detail. Their own clothes are re-woven in their real colors. '
+        'Palette of natural root dyes: madder red, indigo blue, walnut brown, saffron yellow, olive green '
+        'and undyed cream wool, with a few bright Google blue, red, yellow and green threads as accents. '
+        'A narrow border of traditional kilim motifs (elibelinde, ram horn, eight-pointed star) runs '
+        'around the edges on a plain cream woven background. A flat textile artwork, not a 3D render, '
+        'not a photo.'
     ),
-    "emoji": '🪡',
+    "emoji": '🧶',
 }
 
 VIDEO_STYLE = {
-    "name": 'Kastamonu Engraving',
+    "name": 'Kastamonu Dokuma',
     "camera": 'front-facing medium shot',
     "description": (
-        'animated antique engraving illustration character drawn in fine sepia cross-hatched ink lines on'
-        ' aged paper, like a figure from a 19th-century Anatolian book plate, clearly an illustration NOT'
-        ' a real human'
+        'figure woven from colorful wool threads, a living Anatolian kilim tapestry with stair-stepped '
+        'woven edges, clearly a textile artwork and NOT a real human'
     ),
     "atmosphere": (
-        'vintage copperplate engraving look, warm sepia, brown, bronze and faded sage green tones, subtle'
-        ' worn paper grain, traditional Anatolian and Ottoman ornament details, hand-drawn line animation'
+        'hand-woven wool texture with visible warp and weft threads, madder red, indigo, saffron and cream '
+        'root-dye colors with bright Google blue, red, yellow and green thread accents, loose threads '
+        'swaying gently with the movement, warm golden window light, like a vintage illustrated poster'
+    ),
+}
+
+# Only used with the Dokuma style: the weaving room from the poster
+KIT_LOCATION_KEY = 'kastamonu-tezgah'
+
+KIT_LOCATION = {
+    "name": 'Dokuma Tezgahı',
+    "camera": 'static front view of the loom, the woven kilim with the character fills most of the frame',
+    "background": (
+        'the character lives inside a large kilim stretched on a wooden hand loom and moves within the '
+        'woven fabric, in the weaving room of an old Kastamonu mansion: a carved walnut loom frame with '
+        'threads in Google blue, red, yellow and green hanging from the top beam, balls of blue, red, '
+        'yellow and green wool on a small wooden bench, a patterned kilim rug on the wooden floor, copper '
+        'coffee pots on a side table, a window showing the hillside of red-roofed Kastamonu houses and '
+        'the castle, warm golden afternoon light'
     ),
 }
 

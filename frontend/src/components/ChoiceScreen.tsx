@@ -25,7 +25,7 @@ export function ChoiceScreen<T extends AvatarStyle>({
 }: ChoiceScreenProps<T>) {
   const [selected, setSelected] = useState<T | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const eventIds = ACTIVE_EVENT ? [ACTIVE_EVENT.locationTheme.id] : [];
+  const eventIds = ACTIVE_EVENT ? [ACTIVE_EVENT.locationTheme.id, ACTIVE_EVENT.kit?.avatarStyle.id] : [];
 
   const resetTimer = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
