@@ -26,6 +26,12 @@ IAM yetkileri ve Cloud Run deploy adımları [codelab.md](codelab.md) içinde an
 echo "VITE_EVENT=kastamonu" >> frontend/.env   # ya da trabzon
 ```
 
+İlk kurulumdan sonra güncellemek ya da tema değiştirmek için tek komut yeterli:
+
+```bash
+./deploy.sh kastamonu   # ya da trabzon, none
+```
+
 Veo ve Nano Banana ücretli. Denemen bitince Cloud Run servislerini ve bucket'ı silmeyi unutma.
 
 ## DevFest temaları
