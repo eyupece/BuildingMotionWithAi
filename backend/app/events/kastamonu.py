@@ -34,8 +34,8 @@ VIDEO_STYLE = {
     "atmosphere": (
         'hand-woven wool texture with visible warp and weft threads, madder red, indigo, saffron and cream '
         'root-dye colors with bright Google blue, red, yellow and green thread accents, the woven body '
-        'bends and moves freely like a living character, warm golden window light, like a vintage '
-        'illustrated poster'
+        'bends and moves freely like a living character, the textile figure glows slightly against the '
+        'sepia illustrated room'
     ),
 }
 
@@ -48,14 +48,18 @@ KIT_LOCATION = {
     # instead of the person. It now stands in front of the loom and does the move.
     "camera": 'medium-wide shot at eye level, full body visible, the woven character in the foreground and the loom behind',
     "background": (
-        'standing on the wooden floor in front of a large wooden hand loom in the weaving room of an old '
-        'Ottoman-era Kastamonu mansion, the character is the woven figure that has just come to life from '
-        'the half-finished kilim on the loom behind it: dark carved walnut wall panels and ceiling beams, '
-        'a small wooden-framed window showing the hillside of red-roofed Kastamonu houses and the castle, '
-        'threads in Google blue, red, yellow and green hanging from the top beam of the loom, balls of '
-        'blue, red, yellow and green wool on a small wooden bench, a patterned kilim rug on the floor, '
-        'copper coffee pots on a side table, no modern objects, warm golden late-afternoon light. The loom '
-        'and the room stay completely still; only the character moves'
+        'standing on the wooden floor in front of a large carved wooden hand loom in the weaving room of '
+        'an old Ottoman-era Kastamonu mansion, the character is the woven figure that has just come to '
+        'life from the half-finished kilim on the loom behind it; an elderly Kastamonu weaver woman in a '
+        'cream headscarf and embroidered burgundy traditional dress sits on a low bench at the side of the '
+        'loom with her back half turned, still holding her shuttle and looking at the figure; the top '
+        'beam of the loom carries small <> shaped links and threads in Google blue, red, yellow and green, '
+        'balls of blue, red, yellow and green wool on a small wooden bench, a patterned kilim rug on the '
+        'floor, copper ewers on a side table, carved wooden wall panels, a window showing the hillside of '
+        'red-roofed Kastamonu houses and the castle. The loom, the weaver and the room stay still; only '
+        'the character moves. The whole scene is drawn like the DevFest Kastamonu poster: a warm vintage '
+        'hand-painted illustration in sepia, walnut brown and antique gold tones with fine ink linework, '
+        'soft golden window light, delicate Ottoman floral ornaments in the corners of the frame'
     ),
 }
 
