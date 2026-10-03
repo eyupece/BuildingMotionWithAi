@@ -87,6 +87,15 @@ export function ShareScreen({ onDone, videoId, shareUrl }: ShareScreenProps) {
           <div className="p-4 bg-white rounded-3xl border border-line">
             <QRCodeSVG value={shareUrl} size={240} bgColor="#ffffff" fgColor="#202124" level="M" className="w-[200px] h-[200px] sm:w-[240px] sm:h-[240px]" />
           </div>
+          {/* for when the phone is the kiosk itself, or nobody wants to scan */}
+          <a
+            href={shareUrl}
+            target="_blank"
+            rel="noopener"
+            className="text-google-blue font-semibold text-sm underline underline-offset-4"
+          >
+            Bu cihazda aç
+          </a>
           {isComposing && (
             <motion.p
               animate={{ opacity: [0.4, 1, 0.4] }}

@@ -302,7 +302,12 @@ export default function App() {
         <div className="absolute top-1/3 right-1/4 w-72 h-72 rounded-full bg-[#F9AB00]/[0.07] blur-3xl" />
       </div>
 
-      <Header onLogoTap={handleDebugTap} />
+      <Header
+        onLogoTap={() => {
+          handleDebugTap();
+          if (state.currentScreen !== 'welcome') handleReset();
+        }}
+      />
 
       {/* ── Main screen ── */}
       <main className="relative flex-1 min-h-0 overflow-y-auto overflow-x-hidden">

@@ -414,6 +414,9 @@ export function ProcessingScreen({
                 <div>
                   <p className="text-ink font-semibold text-lg">Telefonunla okut</p>
                   <p className="text-muted text-sm">Video hazır olunca orada açılacak. Burada beklemene gerek yok.</p>
+                  <a href={currentShareUrl} target="_blank" rel="noopener" className="inline-block mt-1 text-google-blue font-semibold text-sm underline underline-offset-4">
+                    Bu cihazda aç
+                  </a>
                 </div>
               </div>
               <button onClick={onNextPerson} className="btn-secondary w-full">

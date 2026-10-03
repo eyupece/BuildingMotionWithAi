@@ -8,8 +8,8 @@ interface HeaderProps {
 export function Header({ onLogoTap, right }: HeaderProps) {
   return (
     <header className="flex items-center justify-between gap-4 px-4 sm:px-8 pt-4 sm:pt-6 pb-2 flex-shrink-0">
-      {/* tapping the logo 5x opens the debug panel */}
-      <button onClick={onLogoTap} className="flex items-center gap-2.5 cursor-default" aria-label="Building Motion with AI">
+      {/* the logo goes back to the start; 5 quick taps open the debug panel */}
+      <button onClick={onLogoTap} className="flex items-center gap-2.5 cursor-pointer" aria-label="Building Motion with AI">
         <span className="flex gap-1">
           <span className="w-2 h-2 rounded-full bg-google-blue" />
           <span className="w-2 h-2 rounded-full bg-google-red" />
