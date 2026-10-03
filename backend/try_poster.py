@@ -64,14 +64,16 @@ CITIES = {
         # x, y, w, h of the canvas inside the gold frame
         "slot": (388, 353, 350, 494),
         "woven": False,
-        "framing": "Waist-up, centered, both hands visible in front of the body. Some space above the head.",
+        "framing": "Waist-up and a little small in the picture, centered, with space on every side. "
+                   "Both hands fully visible, resting in front of the body in the lower part.",
         "art": "an old master oil painting",
         "styles": {
             "a": "Paint the person into image 2 as a Rembrandt oil portrait, wearing their own clothes painted "
                  "in oil. Warm light from the upper left, deep shadows, visible brushwork. Keep the dark "
                  "background, the red curtain on the right and the column.",
             "b": "Paint the person into image 2 as a 17th century Dutch portrait in a black doublet with a large "
-                 "white lace collar. Warm light from the upper left, visible brushwork. Keep the dark "
+                 "white lace collar. Keep their own hairstyle, hair color and the smile from the photo. "
+                 "Warm light from the upper left, visible brushwork. Keep the dark "
                  "background, the red curtain on the right and the column.",
             "c": "Paint the person into image 2 as a Velazquez portrait in a dark cloak. Soft light, loose "
                  "brushwork. Keep the dark background, the red curtain on the right and the column.",
