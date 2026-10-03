@@ -19,7 +19,7 @@ POSTER = {
         "Keep their own hairstyle, hair color and the smile from the photo. "
         "Warm light from the upper left, visible brushwork. Keep the dark background, the red curtain "
         "on the right and the column. "
-        "Waist-up and a little small in the picture, centered, with space on every side. "
+        "Waist-up, filling the width of the picture, centered, head in the upper third. "
         "Both hands fully visible, resting in front of the body in the lower part."
     ),
     # one is picked at random per person, so the gallery isn't all the same coat.

@@ -16,7 +16,7 @@ POSTER = {
         "Stitch the person onto the cream linen of image 2 as cross-stitch embroidery in rust red, "
         "indigo blue, mustard and moss green thread. "
         # hands have to be in the picture from the start, or Veo makes up extra ones
-        "Waist-up and a little small in the picture, centered, with space on every side. "
+        "Waist-up, filling the width of the picture, centered, head in the upper third. "
         "Both hands fully visible, resting in front of the body in the lower part."
     ),
 }
