@@ -3,13 +3,14 @@ import os
 import tempfile
 
 import httpx
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 
 from ..config import settings
 from ..models.schemas import ShareResponse, ShareStatusResponse
 from ..services import storage_service, veo_service
 from ..services.video_utils import compose_videos_side_by_side
+from .upload import _base_url
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +94,7 @@ def _get_or_compose(video_id: str) -> str:
 
 
 @router.get("/share/{video_id}", response_model=ShareResponse)
-async def get_share(video_id: str):
+async def get_share(video_id: str, request: Request):
     """Return download URL for the composed video and a share page URL for the QR code."""
     try:
         signed_url = _get_or_compose(video_id)
@@ -102,7 +103,7 @@ async def get_share(video_id: str):
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Failed to generate share URL: {exc}") from exc
 
-    share_page_url = f"{settings.PUBLIC_BASE_URL}/share/{video_id}"
+    share_page_url = f"{_base_url(request)}/share/{video_id}"
     return ShareResponse(download_url=signed_url, qr_data=share_page_url)
 
 
