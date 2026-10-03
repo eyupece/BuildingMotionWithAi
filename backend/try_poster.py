@@ -69,8 +69,7 @@ CITIES = {
                  "in oil. Warm light from the upper left, deep shadows, visible brushwork. Keep the dark "
                  "background, the red curtain on the right and the column.",
             "b": "Paint the person into image 2 as a 17th century Dutch portrait in a black doublet with a large "
-                 "white lace collar. Keep their exact face: same eyes, nose, mouth, face shape, skin and hair, "
-                 "only the clothes and the painting style change. Warm light from the upper left, visible brushwork. Keep the dark "
+                 "white lace collar. Warm light from the upper left, visible brushwork. Keep the dark "
                  "background, the red curtain on the right and the column.",
             "c": "Paint the person into image 2 as a Velazquez portrait in a dark cloak. Soft light, loose "
                  "brushwork. Keep the dark background, the red curtain on the right and the column.",
@@ -182,8 +181,7 @@ async def make_video(args, city, poster, settings, bucket):
         f"The first frame is {city['art']}. The person in it comes to life and does these moves, "
         f"starting right away: {moves.get('veo_prompt', '')} "
         + (f"Timing: {choreo} " if choreo else "")
-        + "When the moves are done, the person goes back to the starting pose and stays there calmly, "
-        "only breathing and blinking. Always exactly two hands. "
+        + "Always exactly two hands. "
         "Only the person moves: head, face, arms and hands. The background stays still. "
         f"Keep the exact look of the first frame, still {city['art']}, for the whole video. "
         "Static camera, no zoom, no cuts."
@@ -233,12 +231,13 @@ async def make_video(args, city, poster, settings, bucket):
         else:
             graph = f"[0:v]copy[p];[1:v]{fit},format=rgba[art];"
         graph += f"[2:v]format=gray[m];[art][m]alphamerge[am];[p][am]overlay={x}:{y}:shortest=1,format=yuv420p"
+        # the app keeps only the first 3 seconds too
         subprocess.run([
             imageio_ffmpeg.get_ffmpeg_exe(), "-y", "-loglevel", "error",
             "-loop", "1", "-i", str(tmp / "poster.png"),
             "-i", str(tmp / "in.mp4"),
             "-loop", "1", "-i", str(tmp / "mask.png"),
-            "-filter_complex", graph, "-t", "8", "-c:v", "libx264", "-crf", "18", str(tmp / "out.mp4"),
+            "-filter_complex", graph, "-t", "3", "-c:v", "libx264", "-crf", "18", str(tmp / "out.mp4"),
         ], check=True)
         name = f"{out}poster.mp4"
         bucket.blob(name).upload_from_filename(tmp / "out.mp4", content_type="video/mp4")
