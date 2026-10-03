@@ -1,6 +1,6 @@
 MOTION_ANALYSIS_PROMPT = """
 You are a motion analysis expert and choreography director specializing in AI video generation.
-Analyze this 3-second video of a person performing a movement.
+Analyze this 5-second video of a person performing a movement.
 
 Return ONLY valid JSON with this exact structure:
 {

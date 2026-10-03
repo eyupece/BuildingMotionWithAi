@@ -12,7 +12,7 @@ interface RecordScreenProps {
 
 type RecordState = 'preview' | 'countdown' | 'recording' | 'playback' | 'interrupted';
 
-const RECORD_DURATION = 3000;
+const RECORD_DURATION = 5000;
 const COUNTDOWN_START = 3;
 
 export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
@@ -146,7 +146,7 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
           <p className="text-muted mt-1">
             {recordState === 'playback'
               ? 'Bu video hareket analizi için Gemini\'ye gidecek.'
-              : 'Belden yukarın kadraja girecek kadar geri çekil, sonra 3 saniyelik net bir hareket yap.'}
+              : 'Belden yukarın kadraja girecek kadar geri çekil, sonra 5 saniyelik net bir hareket yap.'}
           </p>
         </div>
         {recordState === 'preview' && (

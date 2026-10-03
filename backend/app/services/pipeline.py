@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 _POLL_INTERVAL_S = 5
 _MAX_POLL_ATTEMPTS = 120  # 10 min max
-_TRIM_DURATION_S = 3.0
+_TRIM_DURATION_S = video_utils.CLIP_SECONDS
 
 # Track which video_ids have an active pipeline task (prevents duplicates)
 _running_pipelines: set[str] = set()

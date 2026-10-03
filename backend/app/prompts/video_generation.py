@@ -138,7 +138,7 @@ def build_video_prompt(
     prompt = (
         f"Animation only, no real humans. "
         f"A {description} performs the following movement sequence. "
-        f"CRITICAL: The first 3 seconds of this video must faithfully replicate the exact choreography below — "
+        f"CRITICAL: The first 5 seconds of this video must faithfully replicate the exact choreography below — "
         f"matching each body part, direction, timing, and spatial range as precisely as possible. "
         f"Begin the movement immediately from the very first frame with no delay or idle pause. "
         f"{veo_prompt_from_gemini} "
@@ -146,7 +146,7 @@ def build_video_prompt(
 
     if choreography:
         prompt += (
-            f"Exact movement timing for the first 3 seconds (replicate precisely): {choreography} "
+            f"Exact movement timing for the first 5 seconds (replicate precisely): {choreography} "
         )
 
     prompt += (

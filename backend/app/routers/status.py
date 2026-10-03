@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 # Cache video_id → trimmed GCS URI to avoid re-trimming on repeated polls
 _trimmed_uris: dict[str, str] = {}
 
-_TRIM_DURATION_S = 3.0
+_TRIM_DURATION_S = video_utils.CLIP_SECONDS
 
 
 @router.get("/status/{operation_id}", response_model=StatusResponse)

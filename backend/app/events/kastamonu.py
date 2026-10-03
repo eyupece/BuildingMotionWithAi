@@ -11,6 +11,8 @@ POSTER = {
     # x, y, w, h of the empty cloth on the loom
     "slot": (468, 482, 232, 338),
     "woven": True,
+    # the cloth is small in the poster, so the video starts close on it and pulls back
+    "zoom": 2.5,
     "art": "a portrait woven into a cream kilim cloth on a loom",
     "portrait": (
         "Stitch the person onto the cream linen of image 2 as cross-stitch embroidery in rust red, "

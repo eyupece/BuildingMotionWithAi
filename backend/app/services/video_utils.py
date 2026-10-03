@@ -15,6 +15,10 @@ def _ffmpeg_exe() -> str | None:
     return shutil.which("ffmpeg")
 
 
+# Length of the clip people record and of the AI video they get back
+CLIP_SECONDS = 5.0
+
+
 def trim_video(input_path: str, duration_s: float) -> str:
     """Trim a video to the first duration_s seconds.
 
@@ -96,7 +100,7 @@ def compose_videos_side_by_side(original_path: str, generated_path: str) -> str:
             "-crf", "23",
             "-preset", "fast",
             "-movflags", "+faststart",
-            "-t", "3",
+            "-t", str(CLIP_SECONDS),
             tmp.name,
         ]
         try:
@@ -111,7 +115,7 @@ def compose_videos_side_by_side(original_path: str, generated_path: str) -> str:
                 "-filter_complex", filter_complex,
                 "-map", "[out]",
                 "-c:v", "mpeg4",
-                "-t", "3",
+                "-t", str(CLIP_SECONDS),
                 tmp.name,
             ]
             subprocess.run(cmd_fallback, check=True, capture_output=True)

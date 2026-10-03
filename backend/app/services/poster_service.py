@@ -136,7 +136,7 @@ def build_video_prompt(motion_analysis: dict[str, Any], key: str) -> str:
         f"starting right away from the first frame: {moves} "
     )
     if choreography:
-        prompt += f"Exact timing for the first 3 seconds: {choreography} "
+        prompt += f"Exact timing for the first 5 seconds: {choreography} "
     if POSTERS[key].get("video_rules"):
         prompt += POSTERS[key]["video_rules"] + " "
     return prompt + (
@@ -175,7 +175,23 @@ def poster_for(video_id: str) -> str | None:
     return None
 
 
-def paste_video(video_path: str, key: str, seconds: float = 3.0) -> str:
+def _pull_back(poster: dict) -> str:
+    """ffmpeg filters: hold close on the slot for a second, then ease back to the whole poster."""
+    pw, ph = Image.open(_IMAGES / poster["image"]).size
+    x, y, w, h = poster["slot"]
+    cx, cy = x + w / 2, y + h / 2
+    z0 = poster["zoom"]
+    p = "clip((t-1)/3.5\\,0\\,1)"
+    z = f"({z0}-{z0 - 1}*{p}*{p}*(3-2*{p}))"
+    # crop keeps the first frame's iw/ih, so the position is worked out from t too
+    return (
+        f"scale=w='trunc({pw}*{z}/2)*2':h='trunc({ph}*{z}/2)*2':eval=frame:flags=bicubic,"
+        f"crop={pw}:{ph}:x='clip({cx}*{z}-{pw / 2}\\,0\\,{pw}*{z}-{pw})'"
+        f":y='clip({cy}*{z}-{ph / 2}\\,0\\,{ph}*{z}-{ph})'"
+    )
+
+
+def paste_video(video_path: str, key: str, seconds: float = 5.0) -> str:
     """Paste a Veo clip into the poster. Returns the path to a new temp .mp4."""
     from .video_utils import _ffmpeg_exe
 
@@ -195,7 +211,10 @@ def paste_video(video_path: str, key: str, seconds: float = 3.0) -> str:
             )
         else:
             graph = f"[0:v]copy[p];[1:v]{fit},format=rgba[art];"
-        graph += f"[2:v]format=gray[m];[art][m]alphamerge[am];[p][am]overlay={x}:{y}:shortest=1,format=yuv420p"
+        graph += f"[2:v]format=gray[m];[art][m]alphamerge[am];[p][am]overlay={x}:{y}:shortest=1"
+        if poster.get("zoom"):
+            graph += "," + _pull_back(poster)
+        graph += ",format=yuv420p"
         subprocess.run([
             _ffmpeg_exe(), "-y",
             "-loop", "1", "-i", str(_IMAGES / poster["image"]),
