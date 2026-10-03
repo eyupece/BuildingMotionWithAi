@@ -400,6 +400,9 @@ _SHARE_PAGE = """<!DOCTYPE html>
 
     // The phone's own share sheet, so people can pick Instagram, WhatsApp, LinkedIn...
     // Files are fetched up front: iOS only opens the sheet straight from the tap.
+    // Until the file is ready (or if the browser can't share files) the page link is shared.
+    if (navigator.share) shareBtn.classList.remove('hidden');
+
     async function prepareShare(key) {
       const v = variants[key];
       if (!navigator.share || !navigator.canShare) return;
@@ -408,17 +411,15 @@ _SHARE_PAGE = """<!DOCTYPE html>
         if (!res.ok) return;
         const blob = await res.blob();
         const file = new File([blob], v.name, { type: 'video/mp4' });
-        if (!navigator.canShare({ files: [file] })) return;
-        v.file = file;
-        if (key === current) shareBtn.classList.remove('hidden');
+        if (navigator.canShare({ files: [file] })) v.file = file;
       } catch (e) { }
     }
 
     shareBtn.addEventListener('click', async () => {
       const file = variants[current].file;
-      if (!file) return;
       try {
-        await navigator.share({ files: [file], title: 'Building Motion with AI' });
+        if (file) await navigator.share({ files: [file], title: 'Building Motion with AI' });
+        else await navigator.share({ title: 'Building Motion with AI', url: location.href });
       } catch (e) { }
     });
 
@@ -430,7 +431,6 @@ _SHARE_PAGE = """<!DOCTYPE html>
       video.classList.toggle('fit', key === 'avatar');
       document.getElementById('download-link').href = v.download;
       document.getElementById('download-link').setAttribute('download', v.name);
-      shareBtn.classList.toggle('hidden', !v.file);
       document.querySelectorAll('#variant button').forEach(b => b.classList.toggle('on', b.dataset.v === key));
     }
 
