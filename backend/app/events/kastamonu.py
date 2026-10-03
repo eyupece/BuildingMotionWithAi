@@ -19,6 +19,12 @@ POSTER = {
         "Waist-up, filling the width of the picture, centered, head in the upper third. "
         "Both hands fully visible, resting in front of the body in the lower part."
     ),
+    # Veo kept the stitched hands on the table and grew a third arm, pushed toward the camera
+    "video_rules": (
+        "A hand that rises is one of the two resting hands and leaves its place, so the person never "
+        "has more than two hands. The hands stay at the same distance as the body, never come toward "
+        "the camera and never cover the face. The raised hand stays cross-stitch like the rest."
+    ),
 }
 
 LOCATION_KEY = 'kastamonu'

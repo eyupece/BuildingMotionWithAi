@@ -137,6 +137,8 @@ def build_video_prompt(motion_analysis: dict[str, Any], key: str) -> str:
     )
     if choreography:
         prompt += f"Exact timing for the first 3 seconds: {choreography} "
+    if POSTERS[key].get("video_rules"):
+        prompt += POSTERS[key]["video_rules"] + " "
     return prompt + (
         "Always exactly two hands. Only the person moves: head, face, arms and hands. "
         f"The background stays still. Keep the exact look of the first frame, still {art}, "
