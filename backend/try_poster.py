@@ -39,9 +39,7 @@ TRIES = ROOT / "tries"
 
 KEEP = (
     "Keep the person clearly recognizable: same face, hair, glasses and beard if any. "
-    "Waist-up and a little small in the picture, centered, with space on every side. "
-    "Both hands fully visible, resting in front of the body in the lower part, so arm and hand moves "
-    "stay inside the picture. No text, no border, no picture frame, just the scene."
+    "No text, no border, no picture frame, just the scene."
 )
 
 CITIES = {
@@ -49,6 +47,9 @@ CITIES = {
         # x, y, w, h of the empty cloth on the loom
         "slot": (468, 482, 232, 338),
         "woven": True,
+        # hands have to be in the picture from the start, or Veo makes up extra ones
+        "framing": "Waist-up and a little small in the picture, centered, with space on every side. "
+                   "Both hands fully visible, resting in front of the body in the lower part.",
         "art": "a portrait woven into a cream kilim cloth on a loom",
         "styles": {
             "a": "Weave the person into the cream cloth of image 2 as a hand-woven kilim: visible threads, "
@@ -63,14 +64,14 @@ CITIES = {
         # x, y, w, h of the canvas inside the gold frame
         "slot": (388, 353, 350, 494),
         "woven": False,
+        "framing": "Waist-up, centered, both hands visible in front of the body. Some space above the head.",
         "art": "an old master oil painting",
         "styles": {
             "a": "Paint the person into image 2 as a Rembrandt oil portrait, wearing their own clothes painted "
                  "in oil. Warm light from the upper left, deep shadows, visible brushwork. Keep the dark "
                  "background, the red curtain on the right and the column.",
             "b": "Paint the person into image 2 as a 17th century Dutch portrait in a black doublet with a large "
-                 "white lace collar. Keep their own hairstyle, hair color and the smile from the photo. "
-                 "Warm light from the upper left, visible brushwork. Keep the dark "
+                 "white lace collar. Warm light from the upper left, visible brushwork. Keep the dark "
                  "background, the red curtain on the right and the column.",
             "c": "Paint the person into image 2 as a Velazquez portrait in a dark cloak. Soft light, loose "
                  "brushwork. Keep the dark background, the red curtain on the right and the column.",
@@ -137,7 +138,7 @@ def make_stills(args, city, poster, settings, bucket):
     for key, style in city["styles"].items():
         if args.only and key != args.only:
             continue
-        prompt = f"Image 1 is a photo of a person. Image 2 is an empty part of a poster. {style} {KEEP}"
+        prompt = f"Image 1 is a photo of a person. Image 2 is an empty part of a poster. {style} {city['framing']} {KEEP}"
         print(f"{key}: drawing...")
         resp = client.models.generate_content(
             model=nb._MODELS[0],
