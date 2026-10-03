@@ -9,6 +9,7 @@ import asyncio
 import io
 import logging
 import os
+import random
 import subprocess
 import tempfile
 from pathlib import Path
@@ -88,7 +89,7 @@ async def draw_portrait(frame_bytes: bytes, key: str) -> bytes:
     spot = _poster(key).crop((x, y, x + w, y + h))
     prompt = (
         f"Image 1 is a photo of a person. Image 2 is an empty part of a poster. "
-        f"{poster['portrait']} {_KEEP}"
+        f"{poster['portrait'].format(outfit=random.choice(poster.get('outfits') or ['']))} {_KEEP}"
     )
     response = await asyncio.to_thread(
         nb._get_client().models.generate_content,

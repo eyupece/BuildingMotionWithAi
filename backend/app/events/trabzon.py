@@ -14,13 +14,22 @@ POSTER = {
     "woven": False,
     "art": "an old master oil painting",
     "portrait": (
-        "Paint the person into image 2 as a 17th century Dutch portrait in a black doublet with a large "
-        "white lace collar. Keep their own hairstyle, hair color and the smile from the photo. "
+        "Paint the person into image 2 as a 17th century Dutch portrait wearing {outfit}. "
+        "Keep their own hairstyle, hair color and the smile from the photo. "
         "Warm light from the upper left, visible brushwork. Keep the dark background, the red curtain "
         "on the right and the column. "
         "Waist-up and a little small in the picture, centered, with space on every side. "
         "Both hands fully visible, resting in front of the body in the lower part."
     ),
+    # one is picked at random per person, so the gallery isn't all the same coat
+    "outfits": [
+        "a black doublet with a large white lace collar and lace cuffs",
+        "a burgundy velvet coat with a soft falling white linen collar",
+        "a dark fur-trimmed wool cloak over a white linen collar",
+        "an olive green satin doublet with a narrow white collar and lace cuffs",
+        "a deep blue silk garment with a pleated white ruff and a small pearl brooch",
+        "a brown leather jerkin over a white linen shirt with a wide collar",
+    ],
 }
 
 LOCATION_KEY = 'trabzon'
