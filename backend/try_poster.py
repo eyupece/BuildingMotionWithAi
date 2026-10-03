@@ -39,8 +39,9 @@ TRIES = ROOT / "tries"
 
 KEEP = (
     "Keep the person clearly recognizable: same face, hair, glasses and beard if any. "
-    "Waist-up, centered, both hands visible in front of the body so arm and hand moves can be seen. "
-    "Some empty space above the head. No text, no border, no picture frame, just the scene."
+    "Waist-up and a little small in the picture, centered, with space on every side. "
+    "Both hands fully visible, resting in front of the body in the lower part, so arm and hand moves "
+    "stay inside the picture. No text, no border, no picture frame, just the scene."
 )
 
 CITIES = {
@@ -68,7 +69,8 @@ CITIES = {
                  "in oil. Warm light from the upper left, deep shadows, visible brushwork. Keep the dark "
                  "background, the red curtain on the right and the column.",
             "b": "Paint the person into image 2 as a 17th century Dutch portrait in a black doublet with a large "
-                 "white lace collar. Warm light from the upper left, visible brushwork. Keep the dark "
+                 "white lace collar. Keep their exact face: same eyes, nose, mouth, face shape, skin and hair, "
+                 "only the clothes and the painting style change. Warm light from the upper left, visible brushwork. Keep the dark "
                  "background, the red curtain on the right and the column.",
             "c": "Paint the person into image 2 as a Velazquez portrait in a dark cloak. Soft light, loose "
                  "brushwork. Keep the dark background, the red curtain on the right and the column.",
@@ -180,7 +182,9 @@ async def make_video(args, city, poster, settings, bucket):
         f"The first frame is {city['art']}. The person in it comes to life and does these moves, "
         f"starting right away: {moves.get('veo_prompt', '')} "
         + (f"Timing: {choreo} " if choreo else "")
-        + "Only the person moves: head, face, arms and hands. The background stays still. "
+        + "When the moves are done, the person goes back to the starting pose and stays there calmly, "
+        "only breathing and blinking. Always exactly two hands. "
+        "Only the person moves: head, face, arms and hands. The background stays still. "
         f"Keep the exact look of the first frame, still {city['art']}, for the whole video. "
         "Static camera, no zoom, no cuts."
     )
