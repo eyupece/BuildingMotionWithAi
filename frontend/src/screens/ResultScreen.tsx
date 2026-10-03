@@ -2,11 +2,13 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Pipeline } from '../components/Pipeline';
 import { QrIcon, RetryIcon } from '../components/Icons';
+import { isPosterStyle } from '../events';
 
 interface ResultScreenProps {
   recordedVideoUrl: string;
   avatarImageUrl: string;
   generatedVideoUrl: string | null;
+  styleId?: string;
   onShare: () => void;
   onTryAgain: () => void;
   onTimeout: () => void;
@@ -18,6 +20,7 @@ export function ResultScreen({
   recordedVideoUrl,
   avatarImageUrl,
   generatedVideoUrl,
+  styleId,
   onShare,
   onTryAgain,
   onTimeout,
@@ -73,7 +76,7 @@ export function ResultScreen({
         >
           <div className="relative flex-1 min-h-[220px] rounded-2xl overflow-hidden bg-[#202124] flex items-center justify-center">
             {generatedVideoUrl ? (
-              <video ref={avatarRef} src={generatedVideoUrl} loop playsInline muted className="absolute inset-0 w-full h-full object-cover" />
+              <video ref={avatarRef} src={generatedVideoUrl} loop playsInline muted className={`absolute inset-0 w-full h-full ${isPosterStyle(styleId) ? 'object-contain' : 'object-cover'}`} />
             ) : (
               <div className="flex flex-col items-center gap-3 p-6 text-center">
                 <img src={avatarImageUrl} alt="Generated avatar" className="w-32 h-32 rounded-2xl object-cover" />

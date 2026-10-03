@@ -108,9 +108,6 @@ _STYLE_META: dict[str, dict[str, str]] = {
 
 for _event in EVENTS.values():
     _LOCATION_META[_event.LOCATION_KEY] = _event.LOCATION
-    _STYLE_META[_event.AVATAR_STYLE_KEY] = _event.VIDEO_STYLE
-    if hasattr(_event, "KIT_LOCATION_KEY"):
-        _LOCATION_META[_event.KIT_LOCATION_KEY] = _event.KIT_LOCATION
 
 _DEFAULT_STYLE = _STYLE_META["pixel-hero"]
 

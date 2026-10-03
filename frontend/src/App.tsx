@@ -369,6 +369,7 @@ export default function App() {
                 recordedVideoUrl={state.recordedVideoUrl}
                 avatarImageUrl={state.avatarImageUrl}
                 generatedVideoUrl={state.generatedVideoUrl}
+                styleId={state.selectedStyle?.id}
                 onShare={handleShare}
                 onTryAgain={handleReset}
                 onTimeout={handleReset}

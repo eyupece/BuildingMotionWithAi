@@ -1,5 +1,3 @@
-from app.events import EVENTS
-
 AVATAR_STYLES: dict[str, dict] = {
     "pixel-hero": {
         "name": "Pixel Hero",
@@ -32,9 +30,6 @@ AVATAR_STYLES: dict[str, dict] = {
         "emoji": "🧱",
     },
 }
-
-for _event in EVENTS.values():
-    AVATAR_STYLES[_event.AVATAR_STYLE_KEY] = _event.AVATAR_STYLE
 
 AVATAR_PROMPT_TEMPLATE = """Look at this photo of a person. Generate a new image of this same person transformed into {STYLE_NAME} art style.
 

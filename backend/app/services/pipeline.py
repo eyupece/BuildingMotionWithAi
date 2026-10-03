@@ -14,7 +14,7 @@ import logging
 import os
 
 from ..config import settings
-from . import storage_service, veo_service, video_utils
+from . import poster_service, storage_service, veo_service, video_utils
 
 logger = logging.getLogger(__name__)
 
@@ -116,11 +116,13 @@ async def _trim_video(gcs_uri: str, video_id: str) -> str | None:
 
     local_full: str | None = None
     local_trimmed: str | None = None
+    local_poster: str | None = None
     try:
         local_full = storage_service.download_gcs_video(gcs_uri)
         local_trimmed = video_utils.trim_video(local_full, _TRIM_DURATION_S)
+        local_poster = poster_service.maybe_paste(local_trimmed, video_id)
 
-        with open(local_trimmed, "rb") as f:
+        with open(local_poster, "rb") as f:
             trimmed_data = f.read()
 
         trimmed_gcs_uri = storage_service.upload_trimmed_video(video_id, trimmed_data)
@@ -130,7 +132,7 @@ async def _trim_video(gcs_uri: str, video_id: str) -> str | None:
         logger.exception("Pipeline: trim failed for video_id=%s, will use raw video", video_id)
         return None
     finally:
-        for path in (local_full, local_trimmed):
+        for path in {local_full, local_trimmed, local_poster}:
             if path:
                 try:
                     os.unlink(path)

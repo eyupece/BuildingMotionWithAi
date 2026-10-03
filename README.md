@@ -38,10 +38,12 @@ Veo ve Nano Banana ücretli. Denemen bitince Cloud Run servislerini ve bucket'ı
 
 Her DevFest'te o şehre ait bir dünya ekleniyor. Avatar stilleri codelab'dekilerle aynı, yani Kastamonu sokaklarında bir Pixel Hero da olabilirsin, 3D figür de.
 
-- **Kastamonu:** Afişteki gibi bir kilime dokunuyorsun (Kastamonu Dokuma stili). Diğer stillerle de konaklar, kale ve Saat Kulesi olan bir sokak var.
-- **Trabzon:** Çay bahçeleri, liman, Ayasofya ve Sümela.
+Bir de etkinliğin afişi var. Afiş stilini seçersen kendini afişin içinde buluyorsun. Afişe yapay zeka dokunmuyor, Nano Banana sadece boş yere seni çiziyor, Veo onu oynatıyor.
 
-Şehir prompt'ları `backend/app/events/` klasöründe.
+- **Kastamonu:** Afişte tezgahtaki kumaşa kanaviçe olarak işleniyorsun. Diğer stillerle de konaklar, kale ve Saat Kulesi olan bir sokak var.
+- **Trabzon:** Afişteki altın çerçeveye dantel yakalı bir portre olarak giriyorsun. Diğer stillerle çay bahçeleri, liman, Ayasofya ve Sümela.
+
+Şehir prompt'ları `backend/app/events/` klasöründe, afişler `backend/app/events/posters/` içinde.
 
 ## Sunum
 

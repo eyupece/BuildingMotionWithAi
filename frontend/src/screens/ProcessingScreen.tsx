@@ -7,6 +7,7 @@ import { PROCESSING_TIPS, getMockAvatarImageUrl } from '../mockData';
 import { useApi, API_BASE } from '../hooks/useApi';
 import type { AnalysisResult } from '../hooks/useApi';
 import type { AvatarStyle, LocationTheme } from '../types';
+import { isPosterStyle } from '../events';
 
 interface ProcessingScreenProps {
   style: AvatarStyle;
@@ -327,7 +328,7 @@ export function ProcessingScreen({
                         <motion.img
                           src={avatarImageUrl}
                           alt="Your avatar"
-                          className="w-full h-full object-cover"
+                          className={`w-full h-full ${isPosterStyle(style.id) ? 'object-contain' : 'object-cover'}`}
                           initial={{ scale: 0.6, opacity: 0, filter: 'blur(20px)' }}
                           animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
                           transition={{

@@ -1,65 +1,23 @@
 """DevFest Kastamonu 2026.
 
-The poster idea: a Kastamonu weaver weaves the speaker into a kilim, with
-Google colored threads on the loom. The "Dokuma" kit turns you into that
-kilim figure, and the Kastamonu street is a world for the other styles.
+The poster: a Kastamonu weaver at her loom. The poster kit stitches you into
+the cloth on that loom, and the Kastamonu street is a world for the other styles.
 """
 
-AVATAR_STYLE_KEY = 'kastamonu-dokuma'
+POSTER_KEY = 'kastamonu-afis'
 
-AVATAR_STYLE = {
-    "name": 'Kastamonu Dokuma',
-    "description": (
-        'Hand-woven Anatolian kilim tapestry, like a traditional Kastamonu flat-weave. The whole figure '
-        'is made of visible woven wool threads on a loom grid: every shape is built from small stepped '
-        'warp-and-weft blocks, so edges are slightly stair-stepped like hand weaving, with real wool '
-        'texture and soft fibre fuzz. Keep the face clearly recognizable: face shape, glasses, beard and '
-        'hairstyle are woven in careful detail. Their own clothes are re-woven in their real colors. '
-        'Palette of natural root dyes: madder red, indigo blue, walnut brown, saffron yellow, olive green '
-        'and undyed cream wool, with a few bright Google blue, red, yellow and green threads as accents. '
-        'Small traditional kilim motifs (elibelinde, ram horn, eight-pointed star) are woven into the '
-        'clothing. The figure stands on its own like a woven character, not a rectangular rug, on a plain '
-        'cream background. Textile artwork, not a 3D render, not a photo.'
-    ),
-    "emoji": '🧶',
-}
-
-VIDEO_STYLE = {
-    "name": 'Kastamonu Dokuma',
-    "camera": 'front-facing medium shot',
-    "description": (
-        'figure woven from colorful wool threads, a living Anatolian kilim tapestry with stair-stepped '
-        'woven edges, clearly a textile artwork and NOT a real human'
-    ),
-    "atmosphere": (
-        'hand-woven wool texture with visible warp and weft threads, madder red, indigo, saffron and cream '
-        'root-dye colors with bright Google blue, red, yellow and green thread accents, the woven body '
-        'bends and moves freely like a living character, the textile figure glows slightly against the '
-        'sepia illustrated room'
-    ),
-}
-
-# Only used with the Dokuma style: the weaving room from the poster
-KIT_LOCATION_KEY = 'kastamonu-tezgah'
-
-KIT_LOCATION = {
-    "name": 'Dokuma Tezgahı',
-    # The figure used to sit inside the kilim on the loom, and Veo moved the loom
-    # instead of the person. It now stands in front of the loom and does the move.
-    "camera": 'medium-wide shot at eye level, full body visible, the woven character in the foreground and the loom behind',
-    "background": (
-        'standing on the wooden floor in front of a large carved wooden hand loom in the weaving room of '
-        'an old Ottoman-era Kastamonu mansion, the character is the woven figure that has just come to '
-        'life from the half-finished kilim on the loom behind it; an elderly Kastamonu weaver woman in a '
-        'cream headscarf and embroidered burgundy traditional dress sits on a low bench at the side of the '
-        'loom with her back half turned, still holding her shuttle and looking at the figure; the top '
-        'beam of the loom carries small <> shaped links and threads in Google blue, red, yellow and green, '
-        'balls of blue, red, yellow and green wool on a small wooden bench, a patterned kilim rug on the '
-        'floor, copper ewers on a side table, carved wooden wall panels, a window showing the hillside of '
-        'red-roofed Kastamonu houses and the castle. The loom, the weaver and the room stay still; only '
-        'the character moves. The whole scene is drawn like the DevFest Kastamonu poster: a warm vintage '
-        'hand-painted illustration in sepia, walnut brown and antique gold tones with fine ink linework, '
-        'soft golden window light, delicate Ottoman floral ornaments in the corners of the frame'
+POSTER = {
+    "image": "kastamonu.png",
+    # x, y, w, h of the empty cloth on the loom
+    "slot": (468, 482, 232, 338),
+    "woven": True,
+    "art": "a portrait woven into a cream kilim cloth on a loom",
+    "portrait": (
+        "Stitch the person onto the cream linen of image 2 as cross-stitch embroidery in rust red, "
+        "indigo blue, mustard and moss green thread. "
+        # hands have to be in the picture from the start, or Veo makes up extra ones
+        "Waist-up and a little small in the picture, centered, with space on every side. "
+        "Both hands fully visible, resting in front of the body in the lower part."
     ),
 }
 

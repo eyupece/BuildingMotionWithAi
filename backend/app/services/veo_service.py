@@ -54,6 +54,7 @@ async def generate_video(
     :func:`poll_operation` to check progress.
     """
     from ..prompts.video_generation import build_video_prompt
+    from . import poster_service
 
     op_id = str(uuid.uuid4())
 
@@ -67,7 +68,11 @@ async def generate_video(
     from google import genai
     from google.genai.types import GenerateVideosConfig, Image, VideoGenerationReferenceImage
 
-    prompt = build_video_prompt(motion_analysis, avatar_style, location_theme)
+    poster = poster_service.is_poster(avatar_style)
+    if poster:
+        prompt = poster_service.build_video_prompt(motion_analysis, avatar_style)
+    else:
+        prompt = build_video_prompt(motion_analysis, avatar_style, location_theme)
 
     client = genai.Client(
         vertexai=True,
@@ -81,6 +86,7 @@ async def generate_video(
         avatar_image_gcs_uri=avatar_image_gcs_uri,
         video_id=video_id,
         location_theme=location_theme,
+        poster=poster,
     )
     logger.info("Veo model used: %s  operation_id=%s", _VEO_MODEL, op_id)
     _operations[op_id] = (operation, video_id)
@@ -97,6 +103,7 @@ async def _generate_with_retry(
     video_id: str,
     location_theme: str = "",
     use_scene: bool = True,
+    poster: bool = False,
 ) -> Any:
     """Attempt Veo generation up to _MAX_RETRIES times with exponential backoff."""
     import asyncio
@@ -106,13 +113,9 @@ async def _generate_with_retry(
 
     _API_TIMEOUT_S = 120  # 2 min max per attempt
 
-    references = [
-        VideoGenerationReferenceImage(
-            image=Image(gcs_uri=avatar_image_gcs_uri, mime_type="image/png"),
-            reference_type="ASSET",
-        )
-    ]
-    scene = scene_image(location_theme) if use_scene else None
+    avatar = Image(gcs_uri=avatar_image_gcs_uri, mime_type="image/png")
+    references = [VideoGenerationReferenceImage(image=avatar, reference_type="ASSET")]
+    scene = scene_image(location_theme) if use_scene and not poster else None
     if scene:
         references.append(
             VideoGenerationReferenceImage(
@@ -129,20 +132,31 @@ async def _generate_with_retry(
                 "Veo attempt %d/%d with model %s (timeout=%ds)",
                 attempt, _MAX_RETRIES, _VEO_MODEL, _API_TIMEOUT_S,
             )
-            config = GenerateVideosConfig(
-                reference_images=references,
-                aspect_ratio="16:9",
-                duration_seconds=8,
-                generate_audio=False,
-                person_generation="allow_all",
-                output_gcs_uri=f"gs://{settings.GCS_BUCKET}/output/{video_id}/",
-            )
+            output = f"gs://{settings.GCS_BUCKET}/output/{video_id}/"
+            if poster:
+                # The portrait is the first frame, so Veo animates it instead of redrawing it
+                kwargs = dict(image=avatar, config=GenerateVideosConfig(
+                    aspect_ratio="9:16",
+                    duration_seconds=8,
+                    generate_audio=False,
+                    person_generation="allow_adult",
+                    output_gcs_uri=output,
+                ))
+            else:
+                kwargs = dict(config=GenerateVideosConfig(
+                    reference_images=references,
+                    aspect_ratio="16:9",
+                    duration_seconds=8,
+                    generate_audio=False,
+                    person_generation="allow_all",
+                    output_gcs_uri=output,
+                ))
             operation = await asyncio.wait_for(
                 asyncio.to_thread(
                     client.models.generate_videos,
                     model=_VEO_MODEL,
                     prompt=prompt,
-                    config=config,
+                    **kwargs,
                 ),
                 timeout=_API_TIMEOUT_S,
             )

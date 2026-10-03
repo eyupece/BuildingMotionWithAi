@@ -1,43 +1,25 @@
-"""DevFest Trabzon 2026: avatar style and location theme."""
+"""DevFest Trabzon 2026.
 
-AVATAR_STYLE_KEY = 'rembrandt'
+The poster: a gallery of old master portraits with an empty gold frame in the
+middle. The poster kit paints you into that frame, and the Trabzon hills are a
+world for the other styles.
+"""
 
-AVATAR_STYLE = {
-    "name": 'Rembrandt Portrait',
-    "description": (
-        'Museum-quality 17th-century Dutch Golden Age oil painting in the manner of Rembrandt van Rijn, '
-        'as if the person sat for a master painter in Amsterdam. Identity comes first: keep the exact '
-        'face shape, eyes, eyebrows, nose, mouth, jawline, hairline, hairstyle, facial hair, skin tone, '
-        'moles and natural asymmetry. Do not beautify, idealize, age, de-age or create a generic '
-        "Rembrandt face, and keep the person's body proportions. Replace modern clothing with "
-        'historically plausible Dutch Baroque dress from about 1620-1680, choosing ONE wardrobe direction'
-        ' instead of a default black coat with a large white collar: for example an olive velvet doublet '
-        "with a soft falling collar, a burgundy merchant coat over a linen shirt, a scholar's black robe "
-        'with a narrow linen collar, a buff leather jerkin, a fur-trimmed wool mantle, a dark bodice with'
-        ' a square neckline and linen chemise, or a deep blue satin gown with lace cuffs; restrained '
-        'pearl or gold accents only. Classic Rembrandt lighting: warm directional light on one side of '
-        'the face with the small triangle of light under the eye on the shadow side, dramatic '
-        'chiaroscuro, deep umber shadows, eyes clearly readable. Dark atmospheric brown-black background '
-        'with a subtle warm gradient. Palette of raw and burnt umber, burnt sienna, yellow ochre, warm '
-        'ivory, muted vermilion and subtle gold. Visible controlled brushwork, subtle impasto on lit '
-        'areas, translucent glazing in skin shadows, natural skin texture, slight canvas grain. No '
-        'fantasy costumes, crowns or armor, no airbrushed or plastic skin, no modern digital-art or '
-        'filtered-photo look, no extra fingers.'
-    ),
-    "emoji": '🖼️',
-}
+POSTER_KEY = 'trabzon-afis'
 
-VIDEO_STYLE = {
-    "name": 'Rembrandt Portrait',
-    "camera": 'front-facing medium shot',
-    "description": (
-        'animated 17th-century Dutch Baroque oil painting figure in the manner of Rembrandt, dressed in '
-        'period doublet or gown, painted with visible brushstrokes and glazing, clearly a moving oil '
-        'painting NOT a real human'
-    ),
-    "atmosphere": (
-        'Rembrandt chiaroscuro lighting, warm golden highlights against deep umber shadows, visible oil '
-        'brushwork and canvas texture, museum painting that has come to life'
+POSTER = {
+    "image": "trabzon.png",
+    # x, y, w, h of the canvas inside the gold frame
+    "slot": (388, 353, 350, 494),
+    "woven": False,
+    "art": "an old master oil painting",
+    "portrait": (
+        "Paint the person into image 2 as a 17th century Dutch portrait in a black doublet with a large "
+        "white lace collar. Keep their own hairstyle, hair color and the smile from the photo. "
+        "Warm light from the upper left, visible brushwork. Keep the dark background, the red curtain "
+        "on the right and the column. "
+        "Waist-up and a little small in the picture, centered, with space on every side. "
+        "Both hands fully visible, resting in front of the body in the lower part."
     ),
 }
 
