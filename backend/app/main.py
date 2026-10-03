@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import upload, analyze, avatar, generate, status, share, health, queue
 
-app = FastAPI(title="Gemini Motion Lab API")
+app = FastAPI(title="Building Motion with AI API")
 
 app.add_middleware(
     CORSMiddleware,

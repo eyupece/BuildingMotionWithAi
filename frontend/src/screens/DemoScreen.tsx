@@ -29,7 +29,7 @@ export function DemoScreen({ onTryAgain }: DemoScreenProps) {
     <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-8 pt-2 pb-6 flex flex-col gap-5">
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="text-center">
         <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">Demo mode</h1>
-        <p className="text-muted mt-1">A few videos made with Gemini Motion Lab</p>
+        <p className="text-muted mt-1">A few videos made with this demo</p>
       </motion.div>
 
       <motion.div

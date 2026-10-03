@@ -287,7 +287,7 @@ export default function App() {
           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
           className="text-muted text-lg font-medium"
         >
-          Connecting to Gemini Motion Lab...
+          Connecting...
         </motion.p>
       </div>
     );

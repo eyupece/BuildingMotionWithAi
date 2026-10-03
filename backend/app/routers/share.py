@@ -143,12 +143,14 @@ async def get_share_status(video_id: str):
 
     def _get_avatar_url(vid: str) -> str | None:
         """Try to get a signed URL for the avatar image."""
-        avatar_gcs = f"gs://{settings.GCS_BUCKET}/avatars/{vid}.png"
-        try:
-            if storage_service.gcs_blob_exists(avatar_gcs):
-                return storage_service.generate_signed_url(avatar_gcs, vid)
-        except Exception:  # noqa: BLE001
-            pass
+        # Poster kit: the still with the poster around it is the nicer keepsake
+        for name in (f"{vid}-poster", vid):
+            avatar_gcs = f"gs://{settings.GCS_BUCKET}/avatars/{name}.png"
+            try:
+                if storage_service.gcs_blob_exists(avatar_gcs):
+                    return storage_service.generate_signed_url(avatar_gcs, vid)
+            except Exception:  # noqa: BLE001
+                pass
         return None
 
     # 1. Already composed? → ready
@@ -267,7 +269,7 @@ def _render_share_page(video_id: str) -> HTMLResponse:
   </style>
 </head>
 <body>
-  <span class="badge">\\u2728 Gemini Motion Lab</span>
+  <span class="badge">\\u2728 Building Motion with AI</span>
   <h1>Your Motion Avatar</h1>
   <p class="sub">Original vs AI \\u2014 see the transformation</p>
 

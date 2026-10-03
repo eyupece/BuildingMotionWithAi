@@ -21,15 +21,17 @@ git pull --ff-only
 set -a; source .env; set +a
 REGION="${GOOGLE_CLOUD_LOCATION:-us-central1}"
 
-FRONTEND_URL=$(gcloud run services describe gemini-motion-lab-frontend --region "$REGION" \
+# The share page (/share/<id>) is served by the backend, so the QR has to point there.
+# The frontend has no such page and just opens the start screen.
+BACKEND_URL=$(gcloud run services describe gemini-motion-lab-backend --region "$REGION" \
   --project "$GOOGLE_CLOUD_PROJECT" --format="value(status.url)" 2>/dev/null || true)
 
 if [ "$ONLY" != "frontend" ]; then
   echo "Deploying backend..."
   (cd backend && gcloud run deploy gemini-motion-lab-backend --source . --region "$REGION" \
-    --allow-unauthenticated --min-instances 1 --max-instances 3 --memory 2Gi --port 8080 \
+    --allow-unauthenticated --min-instances 1 --max-instances 1 --memory 2Gi --port 8080 \
     --project "$GOOGLE_CLOUD_PROJECT" --quiet \
-    --set-env-vars "GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GCS_BUCKET=$GCS_BUCKET,GCS_SIGNING_SA=$GCS_SIGNING_SA,GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI,MOCK_AI=$MOCK_AI,PUBLIC_BASE_URL=${FRONTEND_URL:-$PUBLIC_BASE_URL}")
+    --set-env-vars "GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GCS_BUCKET=$GCS_BUCKET,GCS_SIGNING_SA=$GCS_SIGNING_SA,GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI,MOCK_AI=$MOCK_AI,PUBLIC_BASE_URL=${BACKEND_URL:-$PUBLIC_BASE_URL}")
 fi
 
 if [ "$ONLY" != "backend" ]; then
