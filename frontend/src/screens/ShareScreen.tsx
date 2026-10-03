@@ -93,15 +93,15 @@ export function ShareScreen({ onDone, videoId, shareUrl }: ShareScreenProps) {
               transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
               className="text-muted text-sm"
             >
-              Composing video...
+              Video hazırlanıyor...
             </motion.p>
           )}
         </div>
 
         <div className="flex flex-col gap-5 text-center md:text-left items-center md:items-start">
           <div>
-            <h1 className="text-3xl sm:text-5xl font-bold text-ink tracking-tight">Scan to get your video</h1>
-            <p className="text-muted text-lg mt-2">Download it on your phone and share it.</p>
+            <h1 className="text-3xl sm:text-5xl font-bold text-ink tracking-tight">Videon için okut</h1>
+            <p className="text-muted text-lg mt-2">Telefonuna indir, istediğin yerde paylaş.</p>
           </div>
 
           <AnimatePresence>
@@ -118,9 +118,9 @@ export function ShareScreen({ onDone, videoId, shareUrl }: ShareScreenProps) {
           </AnimatePresence>
 
           <button onClick={onDone} className="btn-primary w-full sm:w-auto px-12">
-            Start Over
+            Baştan başla
           </button>
-          <p className="text-muted text-sm">Returning to start in {timeLeft}s</p>
+          <p className="text-muted text-sm">{timeLeft} sn sonra başa dönülecek</p>
         </div>
       </motion.div>
     </div>

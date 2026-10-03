@@ -31,15 +31,15 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           )}
 
           <h1 className="text-5xl sm:text-6xl 2xl:text-7xl font-bold tracking-tight leading-[1.02] text-ink">
-            Record your move.
+            Hareketini kaydet.
             <br />
             <span className="bg-gradient-to-r from-[#4285F4] via-[#A142F4] to-[#EA4335] bg-clip-text text-transparent">
-              See yourself as AI.
+              Kendini yapay zekayla gör.
             </span>
           </h1>
 
           <p className="text-lg sm:text-xl text-muted max-w-xl">
-            Gemini understands your move, Nano Banana draws your avatar and Veo brings it to life doing the same thing.
+            Gemini hareketini anlıyor, Nano Banana avatarını çiziyor, Veo da onu aynı hareketi yaparken canlandırıyor.
           </p>
 
           {/* Consent */}
@@ -57,7 +57,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
               {consented && <CheckIcon className="w-4 h-4 text-white" />}
             </span>
             <span className="text-muted text-sm sm:text-base leading-relaxed">
-              I understand this demo records my face and processes the video with AI models.
+              Bu demonun yüzümü kaydettiğini ve videoyu yapay zeka modelleriyle işlediğini biliyorum.
             </span>
             <input
               id="privacy-consent"
@@ -65,7 +65,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
               checked={consented}
               onChange={(e) => setConsented(e.target.checked)}
               className="sr-only"
-              aria-label="Privacy consent"
+              aria-label="Gizlilik onayı"
             />
           </label>
 
@@ -75,7 +75,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
             disabled={!consented}
             className="btn-primary w-full sm:w-auto px-12 text-xl"
           >
-            Start
+            Başla
             <ArrowRight className="w-5 h-5" />
           </motion.button>
         </motion.div>

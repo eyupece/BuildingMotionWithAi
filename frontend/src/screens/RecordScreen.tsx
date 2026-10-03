@@ -122,13 +122,13 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
           <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#EA4335]/10 text-google-red">
             <CameraIcon className="w-9 h-9" />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-ink">Camera access needed</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-ink">Kamera izni gerekiyor</h2>
           <p className="text-muted text-lg">
-            Please allow camera access to record your move. Check your browser settings and try again.
+            Hareketini kaydetmek için kamera izni ver. Tarayıcı ayarlarını kontrol edip tekrar dene.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 w-full mt-2">
-            <button onClick={onBack} className="btn-secondary flex-1">Go Back</button>
-            <button onClick={() => startCamera()} className="btn-primary flex-1">Retry</button>
+            <button onClick={onBack} className="btn-secondary flex-1">Geri dön</button>
+            <button onClick={() => startCamera()} className="btn-primary flex-1">Tekrar dene</button>
           </div>
         </motion.div>
       </div>
@@ -139,18 +139,18 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
     <div className="flex-1 flex flex-col w-full max-w-5xl mx-auto px-4 sm:px-8 pt-2 pb-6">
       <div className="flex items-end justify-between gap-4 mb-4">
         <div>
-          <p className="eyebrow mb-1">Step 1 of 3</p>
+          <p className="eyebrow mb-1">Adım 1 / 3</p>
           <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">
-            {recordState === 'playback' ? 'Looks good?' : 'Record your move'}
+            {recordState === 'playback' ? 'Beğendin mi?' : 'Hareketini kaydet'}
           </h1>
           <p className="text-muted mt-1">
             {recordState === 'playback'
-              ? 'This clip goes to Gemini for motion analysis.'
-              : 'Stand back so your upper body is in frame, then make a clear 3-second move.'}
+              ? 'Bu video hareket analizi için Gemini\'ye gidecek.'
+              : 'Belden yukarın kadraja girecek kadar geri çekil, sonra 3 saniyelik net bir hareket yap.'}
           </p>
         </div>
         {recordState === 'preview' && (
-          <button onClick={onBack} className="flex-shrink-0 w-11 h-11 rounded-full bg-white border border-line flex items-center justify-center text-muted hover:text-ink" aria-label="Close">
+          <button onClick={onBack} className="flex-shrink-0 w-11 h-11 rounded-full bg-white border border-line flex items-center justify-center text-muted hover:text-ink" aria-label="Kapat">
             <CloseIcon className="w-5 h-5" />
           </button>
         )}
@@ -206,10 +206,10 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
               exit={{ opacity: 0 }}
               className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center bg-canvas"
             >
-              <h2 className="text-2xl sm:text-3xl font-bold text-ink">Recording interrupted</h2>
-              <p className="text-muted text-lg">The camera stream was lost. Please retake your video.</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-ink">Kayıt yarıda kesildi</h2>
+              <p className="text-muted text-lg">Kamera bağlantısı koptu. Videoyu tekrar çek.</p>
               <button onClick={handleRetakeAfterInterrupt} className="btn-primary mt-2">
-                <RetryIcon className="w-5 h-5" /> Retake
+                <RetryIcon className="w-5 h-5" /> Tekrar çek
               </button>
             </motion.div>
           )}
@@ -230,12 +230,12 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
 
         {recordState === 'playback' && (
           <div className="absolute top-4 left-4 bg-white/90 rounded-full px-3.5 py-1.5 shadow">
-            <span className="text-ink font-semibold text-sm">Preview</span>
+            <span className="text-ink font-semibold text-sm">Önizleme</span>
           </div>
         )}
 
         {!isReady && recordState === 'preview' && (
-          <div className="absolute inset-0 flex items-center justify-center text-white/70">Starting camera...</div>
+          <div className="absolute inset-0 flex items-center justify-center text-white/70">Kamera açılıyor...</div>
         )}
       </div>
 
@@ -248,11 +248,11 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
                 onClick={handleRecord}
                 disabled={!isReady}
                 className="w-20 h-20 rounded-full bg-white border-4 border-line flex items-center justify-center shadow-card disabled:opacity-50 hover:border-[#EA4335]/40 transition-colors"
-                aria-label="Record"
+                aria-label="Kaydet"
               >
                 <div className="w-14 h-14 rounded-full bg-google-red" />
               </button>
-              <p className="text-muted text-sm">Tap to record</p>
+              <p className="text-muted text-sm">Kaydetmek için dokun</p>
             </motion.div>
           )}
 
@@ -271,7 +271,7 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
           {recordState === 'playback' && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 w-full sm:w-auto">
               <button onClick={handleRetake} className="btn-secondary flex-1 sm:flex-none">
-                <RetryIcon className="w-5 h-5" /> Retake
+                <RetryIcon className="w-5 h-5" /> Tekrar çek
               </button>
               <button onClick={handleNext} className="btn-primary flex-1 sm:flex-none">
                 Next <ArrowRight className="w-5 h-5" />

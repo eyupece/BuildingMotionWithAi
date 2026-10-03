@@ -287,7 +287,7 @@ export default function App() {
           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
           className="text-muted text-lg font-medium"
         >
-          Connecting...
+          Bağlanıyor...
         </motion.p>
       </div>
     );
@@ -410,8 +410,8 @@ export default function App() {
                 className="w-12 h-12 rounded-full border-4 border-faint"
                 style={{ borderTopColor: '#4285F4', animation: 'spin 1s linear infinite' }}
               />
-              <h2 className="text-2xl font-bold text-ink">Connection lost</h2>
-              <p className="text-muted">Reconnecting...</p>
+              <h2 className="text-2xl font-bold text-ink">Bağlantı koptu</h2>
+              <p className="text-muted">Yeniden bağlanıyor...</p>
             </div>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </motion.div>

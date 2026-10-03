@@ -8,6 +8,7 @@ import { useApi, API_BASE } from '../hooks/useApi';
 import type { AnalysisResult } from '../hooks/useApi';
 import type { AvatarStyle, LocationTheme } from '../types';
 import { isPosterStyle } from '../events';
+import { DEMOS } from './DemoScreen';
 
 interface ProcessingScreenProps {
   style: AvatarStyle;
@@ -218,8 +219,8 @@ export function ProcessingScreen({
           <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#EA4335]/10 text-google-red">
             <SparkIcon className="w-9 h-9" />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-ink">Something went wrong</h2>
-          <p className="text-muted text-lg">We couldn't connect to the AI services right now.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-ink">Bir şeyler ters gitti</h2>
+          <p className="text-muted text-lg">Şu an yapay zeka servislerine bağlanamadık.</p>
           {fatalErrorMessage && (
             <p className="text-google-red text-xs font-mono w-full break-all px-3 py-2 rounded-xl bg-[#EA4335]/10">
               {fatalErrorMessage}
@@ -227,10 +228,10 @@ export function ProcessingScreen({
           )}
           <div className="flex flex-col gap-3 w-full mt-2">
             <button onClick={onError} className="btn-primary w-full">
-              <RetryIcon className="w-5 h-5" /> Try Again
+              <RetryIcon className="w-5 h-5" /> Tekrar dene
             </button>
-            {allApiFailed && (
-              <button onClick={onDemo} className="btn-secondary w-full">Watch a Demo</button>
+            {allApiFailed && DEMOS.length > 0 && (
+              <button onClick={onDemo} className="btn-secondary w-full">Demo izle</button>
             )}
           </div>
         </motion.div>
@@ -260,8 +261,8 @@ export function ProcessingScreen({
                 className="w-full max-w-2xl flex flex-col gap-5"
               >
                 <div>
-                  <p className="eyebrow mb-1" style={{ color: '#A142F4' }}>{currentShareUrl ? 'Gemini' : 'Uploading'}</p>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-ink">Analyzing your movement</h2>
+                  <p className="eyebrow mb-1" style={{ color: '#A142F4' }}>{currentShareUrl ? 'Gemini' : 'Yükleniyor'}</p>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-ink">Hareketin analiz ediliyor</h2>
                 </div>
                 <div className="grid sm:grid-cols-[160px_1fr] gap-4 items-stretch">
                   <video
@@ -306,7 +307,7 @@ export function ProcessingScreen({
               >
                 <div>
                   <p className="eyebrow mb-1" style={{ color: '#E37400' }}>Nano Banana</p>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-ink">Creating your {style.name} avatar</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-ink">{style.name} avatarın çiziliyor</h2>
                 </div>
                 <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-3xl overflow-hidden" style={{ background: `${style.color}18` }}>
                   {!showAvatar ? (
@@ -327,7 +328,7 @@ export function ProcessingScreen({
                         />
                         <motion.img
                           src={avatarImageUrl}
-                          alt="Your avatar"
+                          alt="Avatarın"
                           className={`w-full h-full ${isPosterStyle(style.id) ? 'object-contain' : 'object-cover'}`}
                           initial={{ scale: 0.6, opacity: 0, filter: 'blur(20px)' }}
                           animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
@@ -354,12 +355,12 @@ export function ProcessingScreen({
               >
                 <div>
                   <p className="eyebrow mb-1" style={{ color: '#34A853' }}>Veo</p>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-ink">Placing you in {theme.name}</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-ink">Sahne hazırlanıyor: {theme.name}</h2>
                 </div>
 
                 <div className="flex items-center gap-3 sm:gap-5">
                   {avatarImageUrl && (
-                    <img src={avatarImageUrl} alt="Your avatar" className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl object-cover shadow-card" />
+                    <img src={avatarImageUrl} alt="Avatarın" className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl object-cover shadow-card" />
                   )}
                   <motion.div
                     animate={{ x: [0, 6, 0] }}
@@ -373,7 +374,7 @@ export function ProcessingScreen({
 
                 <div className="w-full">
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-muted">Generating an 8-second video</span>
+                    <span className="text-muted">Video oluşturuluyor</span>
                     <span className="font-semibold text-ink">{Math.round(videoProgress * 100)}%</span>
                   </div>
                   <div className="h-2.5 w-full rounded-full bg-faint overflow-hidden">
@@ -411,18 +412,18 @@ export function ProcessingScreen({
                   <QRCodeSVG value={currentShareUrl} size={132} bgColor="#ffffff" fgColor="#202124" level="M" />
                 </div>
                 <div>
-                  <p className="text-ink font-semibold text-lg">Scan with your phone</p>
-                  <p className="text-muted text-sm">Your video shows up there when it's ready. No need to wait here.</p>
+                  <p className="text-ink font-semibold text-lg">Telefonunla okut</p>
+                  <p className="text-muted text-sm">Video hazır olunca orada açılacak. Burada beklemene gerek yok.</p>
                 </div>
               </div>
               <button onClick={onNextPerson} className="btn-secondary w-full">
-                Next person
+                Sıradaki kişi
               </button>
             </motion.div>
           ) : (
             <div className="flex flex-col items-center gap-3 text-muted">
               <QrIcon className="w-10 h-10 text-line" />
-              <p className="text-sm">Your QR code appears once the upload is done.</p>
+              <p className="text-sm">Yükleme bitince QR kodun burada çıkacak.</p>
             </div>
           )}
         </div>

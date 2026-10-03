@@ -50,8 +50,8 @@ export function ResultScreen({
       </div>
 
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">Your avatar is ready</h1>
-        <p className="text-muted mt-1">Same move, new you.</p>
+        <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">Avatarın hazır</h1>
+        <p className="text-muted mt-1">Aynı hareket, yeni sen.</p>
       </motion.div>
 
       <div className="grid sm:grid-cols-2 gap-4 sm:gap-5 flex-1 min-h-0">
@@ -64,7 +64,7 @@ export function ResultScreen({
           <div className="relative flex-1 min-h-[220px] rounded-2xl overflow-hidden bg-[#202124]">
             <video ref={originalRef} src={recordedVideoUrl} loop playsInline muted className="absolute inset-0 w-full h-full object-cover" />
           </div>
-          <p className="px-2 pt-2.5 pb-1 font-semibold text-ink">You</p>
+          <p className="px-2 pt-2.5 pb-1 font-semibold text-ink">Sen</p>
         </motion.div>
 
         <motion.div
@@ -79,14 +79,14 @@ export function ResultScreen({
               <video ref={avatarRef} src={generatedVideoUrl} loop playsInline muted className={`absolute inset-0 w-full h-full ${isPosterStyle(styleId) ? 'object-contain' : 'object-cover'}`} />
             ) : (
               <div className="flex flex-col items-center gap-3 p-6 text-center">
-                <img src={avatarImageUrl} alt="Generated avatar" className="w-32 h-32 rounded-2xl object-cover" />
-                <p className="text-white/70 text-sm">Video generation failed. Tap Try Again.</p>
+                <img src={avatarImageUrl} alt="Oluşturulan avatar" className="w-32 h-32 rounded-2xl object-cover" />
+                <p className="text-white/70 text-sm">Video oluşturulamadı. Tekrar dene'ye dokun.</p>
               </div>
             )}
           </div>
           <div className="flex items-center gap-2.5 px-2 pt-2.5 pb-1">
             <img src={avatarImageUrl} alt="" className="w-7 h-7 rounded-lg object-cover" />
-            <p className="font-semibold text-ink">Your avatar</p>
+            <p className="font-semibold text-ink">Avatarın</p>
             <span className="ml-auto text-xs font-medium text-google-green bg-[#34A853]/10 rounded-full px-2.5 py-1">Veo</span>
           </div>
         </motion.div>
@@ -99,10 +99,10 @@ export function ResultScreen({
         className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-center"
       >
         <button onClick={onTryAgain} className="btn-secondary sm:min-w-[200px]">
-          <RetryIcon className="w-5 h-5" /> Try Again
+          <RetryIcon className="w-5 h-5" /> Tekrar dene
         </button>
         <button onClick={onShare} className="btn-primary sm:min-w-[200px]" style={{ background: '#EA4335', boxShadow: '0 6px 20px rgba(234,67,53,0.35)' }}>
-          <QrIcon className="w-5 h-5" /> Share
+          <QrIcon className="w-5 h-5" /> Paylaş
         </button>
       </motion.div>
     </div>

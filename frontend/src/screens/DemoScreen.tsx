@@ -5,10 +5,9 @@ interface DemoScreenProps {
   onTryAgain: () => void;
 }
 
-const DEMOS = [
-  { label: 'Pixel Hero', file: '/demos/pixel-hero.mp4' },
-  { label: 'Cyber Nova', file: '/demos/cyber-nova.mp4' },
-  { label: 'Watercolor Dream', file: '/demos/watercolor-dream.mp4' },
+// Videos in public/demos, shown if the AI services are down during a live demo
+export const DEMOS = [
+  { label: 'Trabzon Afişi', file: '/demos/trabzon-afis.mp4' },
 ];
 
 export function DemoScreen({ onTryAgain }: DemoScreenProps) {
@@ -28,8 +27,8 @@ export function DemoScreen({ onTryAgain }: DemoScreenProps) {
   return (
     <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-8 pt-2 pb-6 flex flex-col gap-5">
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">Demo mode</h1>
-        <p className="text-muted mt-1">A few videos made with this demo</p>
+        <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">Demo modu</h1>
+        <p className="text-muted mt-1">Bu demoyla yapılmış birkaç video</p>
       </motion.div>
 
       <motion.div
@@ -50,7 +49,8 @@ export function DemoScreen({ onTryAgain }: DemoScreenProps) {
         />
       </motion.div>
 
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+      {DEMOS.length > 1 && (
+      <div className="grid gap-2 sm:gap-3" style={{ gridTemplateColumns: `repeat(${DEMOS.length}, minmax(0, 1fr))` }}>
         {DEMOS.map((demo, i) => (
           <button
             key={demo.file}
@@ -66,8 +66,9 @@ export function DemoScreen({ onTryAgain }: DemoScreenProps) {
           </button>
         ))}
       </div>
+      )}
 
-      <button onClick={onTryAgain} className="btn-primary w-full">Try Again</button>
+      <button onClick={onTryAgain} className="btn-primary w-full">Tekrar dene</button>
     </div>
   );
 }

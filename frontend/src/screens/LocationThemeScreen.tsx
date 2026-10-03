@@ -12,11 +12,11 @@ export function LocationThemeScreen({ onSelect, onBack, onTimeout }: LocationThe
   return (
     <ChoiceScreen
       step={3}
-      title="Choose your world"
-      subtitle="Veo will place your avatar here"
+      title="Dünyanı seç"
+      subtitle="Veo avatarını buraya yerleştirecek"
       items={LOCATION_THEMES}
-      cta={(t) => `Generate in ${t.name}`}
-      placeholder="Select a world"
+      cta={(t) => `${t.name} ile oluştur`}
+      placeholder="Bir dünya seç"
       onSelect={onSelect}
       onBack={onBack}
       onTimeout={onTimeout}

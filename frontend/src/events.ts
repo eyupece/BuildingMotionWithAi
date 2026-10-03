@@ -18,7 +18,7 @@ export const EVENTS: Record<string, DevFestEvent> = {
     locationTheme: {
       id: 'kastamonu',
       name: 'Kastamonu',
-      description: 'Castle, konaks and clock tower',
+      description: 'Kale, konaklar ve Saat Kulesi',
       emoji: '🏰',
       color: '#A0783C',
       previewImage: '/previews/kastamonu.png',
@@ -26,16 +26,16 @@ export const EVENTS: Record<string, DevFestEvent> = {
     kit: {
       avatarStyle: {
         id: 'kastamonu-afis',
-        name: 'Kastamonu Poster',
-        description: 'Stitched onto the loom in the poster',
+        name: 'Kastamonu Afişi',
+        description: 'Afişteki tezgaha işleniyorsun',
         emoji: '🧵',
         color: '#A23B2A',
         previewImage: '/previews/kastamonu-afis.png',
       },
       theme: {
         id: 'kastamonu-afis',
-        name: 'the Kastamonu poster',
-        description: 'On the loom in the DevFest Kastamonu poster',
+        name: 'Kastamonu afişi',
+        description: 'DevFest Kastamonu afişindeki tezgahta',
         emoji: '🧵',
         color: '#A23B2A',
         previewImage: '/previews/kastamonu-afis.png',
@@ -47,7 +47,7 @@ export const EVENTS: Record<string, DevFestEvent> = {
     locationTheme: {
       id: 'trabzon',
       name: 'Trabzon',
-      description: 'Black Sea harbor, Sümela, tea hills',
+      description: 'Liman, Sümela ve çay bahçeleri',
       emoji: '⛵',
       color: '#5C6B3A',
       previewImage: '/previews/trabzon.png',
@@ -55,16 +55,16 @@ export const EVENTS: Record<string, DevFestEvent> = {
     kit: {
       avatarStyle: {
         id: 'trabzon-afis',
-        name: 'Trabzon Poster',
-        description: 'Painted into the gold frame in the poster',
+        name: 'Trabzon Afişi',
+        description: 'Afişteki altın çerçeveye çiziliyorsun',
         emoji: '🖼️',
         color: '#7A1F1F',
         previewImage: '/previews/trabzon-afis.png',
       },
       theme: {
         id: 'trabzon-afis',
-        name: 'the Trabzon poster',
-        description: 'In the gold frame of the DevFest Trabzon poster',
+        name: 'Trabzon afişi',
+        description: 'DevFest Trabzon afişindeki altın çerçevede',
         emoji: '🖼️',
         color: '#7A1F1F',
         previewImage: '/previews/trabzon-afis.png',

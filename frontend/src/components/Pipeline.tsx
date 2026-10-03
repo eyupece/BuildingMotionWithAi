@@ -3,11 +3,11 @@ import { UploadIcon, SparkIcon, FaceIcon, FilmIcon, QrIcon, CheckIcon } from './
 
 // Same five stages and colors as the timeline in the talk deck
 export const STAGES = [
-  { key: 'upload', label: 'Upload', color: '#4285F4', Icon: UploadIcon },
+  { key: 'upload', label: 'Yükleme', color: '#4285F4', Icon: UploadIcon },
   { key: 'gemini', label: 'Gemini', color: '#A142F4', Icon: SparkIcon },
   { key: 'banana', label: 'Nano Banana', color: '#F9AB00', Icon: FaceIcon },
   { key: 'veo', label: 'Veo', color: '#34A853', Icon: FilmIcon },
-  { key: 'share', label: 'Share', color: '#EA4335', Icon: QrIcon },
+  { key: 'share', label: 'Paylaşım', color: '#EA4335', Icon: QrIcon },
 ] as const;
 
 export type StageKey = (typeof STAGES)[number]['key'];

@@ -5,14 +5,19 @@
 #   ./deploy.sh kastamonu       switch the event and deploy both
 #   ./deploy.sh trabzon backend only the backend
 #   ./deploy.sh none            original codelab look, no event
+#   ./deploy.sh trabzon etkinlik  event day: backend CPU stays on all day (about $2/day)
+#
+# A plain deploy turns CPU throttling back on, so run it again after the event.
 set -e
 cd "$(dirname "$0")"
 
 EVENT=""
 ONLY=""
+CPU="--cpu-throttling"
 for arg in "$@"; do
   case "$arg" in
     backend|frontend) ONLY="$arg" ;;
+    etkinlik) CPU="--no-cpu-throttling" ;;
     *) EVENT="$arg" ;;
   esac
 done
@@ -29,9 +34,14 @@ BACKEND_URL=$(gcloud run services describe gemini-motion-lab-backend --region "$
 if [ "$ONLY" != "frontend" ]; then
   echo "Deploying backend..."
   (cd backend && gcloud run deploy gemini-motion-lab-backend --source . --region "$REGION" \
-    --allow-unauthenticated --min-instances 1 --max-instances 1 --memory 2Gi --port 8080 \
+    --allow-unauthenticated --min-instances 1 --max-instances 1 --memory 2Gi --port 8080 $CPU \
     --project "$GOOGLE_CLOUD_PROJECT" --quiet \
     --set-env-vars "GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GCS_BUCKET=$GCS_BUCKET,GCS_SIGNING_SA=$GCS_SIGNING_SA,GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI,MOCK_AI=$MOCK_AI,PUBLIC_BASE_URL=${BACKEND_URL:-$PUBLIC_BASE_URL}")
+
+  # recordings and videos are deleted after 14 days
+  echo '{"rule":[{"action":{"type":"Delete"},"condition":{"age":14}}]}' > /tmp/lifecycle.json
+  gcloud storage buckets update "gs://$GCS_BUCKET" --lifecycle-file=/tmp/lifecycle.json \
+    --project "$GOOGLE_CLOUD_PROJECT" --quiet || echo "Could not set the bucket lifecycle, skipping."
 fi
 
 if [ "$ONLY" != "backend" ]; then

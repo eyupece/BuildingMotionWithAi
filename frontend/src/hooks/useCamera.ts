@@ -79,13 +79,13 @@ export function useCamera(): UseCameraReturn {
           } else if (retries >= 10) {
             clearInterval(retryInterval);
             console.error('[useCamera] Failed to attach stream after 10 retries');
-            setError('Camera started but video element not ready. Please go back and try again.');
+            setError('Kamera açıldı ama görüntü hazır değil. Geri dönüp tekrar dene.');
           }
         }, 100);
       }
     } catch (err) {
       console.error('[useCamera] getUserMedia failed:', err);
-      setError(err instanceof Error ? err.message : 'Camera access denied');
+      setError(err instanceof Error ? err.message : 'Kamera izni verilmedi');
     }
   }, []);
 

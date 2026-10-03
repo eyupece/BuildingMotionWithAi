@@ -132,7 +132,7 @@ async def download_video(video_id: str):
         _stream(),
         media_type="video/mp4",
         headers={
-            "Content-Disposition": 'attachment; filename="my-motion-avatar.mp4"',
+            "Content-Disposition": 'attachment; filename="building-motion-with-ai.mp4"',
         },
     )
 
@@ -203,219 +203,204 @@ async def share_page(video_id: str):
 
 
 def _render_share_page(video_id: str) -> HTMLResponse:
-    api_status_url = f"/api/share/{video_id}/status"
-    api_download_url = f"/api/share/{video_id}/download"
+    html = (
+        _SHARE_PAGE
+        .replace("__STATUS_URL__", f"/api/share/{video_id}/status")
+        .replace("__DOWNLOAD_URL__", f"/api/share/{video_id}/download")
+    )
+    return HTMLResponse(content=html)
 
-    html = f"""<!DOCTYPE html>
-<html lang="en">
+
+# Plain template instead of an f-string, so the CSS and JS braces stay readable
+_SHARE_PAGE = """<!DOCTYPE html>
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0A0A1A">
-  <title>My Motion Avatar</title>
+  <meta name="theme-color" content="#F8FAFD">
+  <title>Building Motion with AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
-    body {{
-      background: #0A0A1A; color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      min-height: 100dvh; display: flex; flex-direction: column;
-      align-items: center; padding: 24px 16px env(safe-area-inset-bottom, 16px); gap: 20px;
-    }}
-    h1 {{ font-size: 1.5rem; font-weight: 800; text-align: center; margin-top: 8px; }}
-    p.sub {{ color: rgba(255,255,255,0.5); font-size: 0.9rem; text-align: center; }}
-    video {{ width: 100%; max-width: 320px; border-radius: 16px; background: #111; aspect-ratio: 9/16; object-fit: cover; }}
-    .buttons {{ display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }}
-    a.btn {{
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      width: 100%; padding: 16px; border-radius: 50px; font-size: 1rem; font-weight: 700;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #F8FAFD; color: #202124;
+      font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100dvh; display: flex; flex-direction: column; align-items: center;
+      padding: 20px 16px calc(env(safe-area-inset-bottom, 0px) + 24px); gap: 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; }
+    .dots { display: flex; gap: 4px; }
+    .dots i { width: 8px; height: 8px; border-radius: 50%; display: block; }
+    h1 { font-size: 1.6rem; font-weight: 700; text-align: center; letter-spacing: -0.01em; }
+    p.sub { color: #5F6368; font-size: 0.95rem; text-align: center; margin-top: -10px; }
+    .card {
+      width: 100%; max-width: 340px; background: #fff; border-radius: 24px; padding: 8px;
+      box-shadow: 0 1px 2px rgba(60,64,67,0.08), 0 8px 24px rgba(60,64,67,0.10);
+    }
+    video { width: 100%; display: block; border-radius: 18px; background: #202124; aspect-ratio: 9/16; object-fit: cover; }
+    .buttons { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 340px; }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+      padding: 15px; border-radius: 999px; font: inherit; font-size: 1rem; font-weight: 700;
       border: none; cursor: pointer; text-decoration: none; -webkit-tap-highlight-color: transparent;
-    }}
-    .btn-save {{
-      background: linear-gradient(135deg, #4285F4, #1a73e8); color: #fff;
-    }}
-    .btn-save-avatar {{
-      background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);
-    }}
-
-    .badge {{
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(66,133,244,0.15); border: 1px solid rgba(66,133,244,0.3);
-      border-radius: 50px; padding: 6px 14px; font-size: 0.8rem; color: #4285F4;
-    }}
-    .avatar-section {{
-      display: flex; align-items: center; gap: 16px;
-      width: 100%; max-width: 320px; padding: 12px;
-      background: rgba(255,255,255,0.05); border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-    }}
-    .avatar-section img {{
-      width: 80px; height: 80px; border-radius: 12px; object-fit: cover;
-      border: 2px solid rgba(66,133,244,0.4);
-    }}
-    .avatar-section .info {{ flex: 1; }}
-    .avatar-section .info p {{ color: rgba(255,255,255,0.7); font-size: 0.85rem; }}
-    .avatar-section .info h3 {{ font-size: 1rem; font-weight: 700; margin-bottom: 2px; }}
-    .loading {{ display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 20px; }}
-    .spinner {{
-      width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.15);
-      border-top-color: #4285F4; border-radius: 50%; animation: spin 1s linear infinite;
-    }}
-    @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
-    @keyframes pulse {{ 0%,100% {{ opacity: 0.4; }} 50% {{ opacity: 1; }} }}
-    .pulse {{ animation: pulse 1.8s ease-in-out infinite; }}
-    .hidden {{ display: none !important; }}
-    .stage-msg {{ color: rgba(255,255,255,0.6); font-size: 0.95rem; text-align: center; }}
-    .stage-hint {{ color: rgba(255,255,255,0.35); font-size: 0.8rem; text-align: center; margin-top: 4px; }}
+    }
+    .btn-primary { background: #1A73E8; color: #fff; }
+    .btn-secondary { background: #fff; color: #1A73E8; border: 1px solid #DADCE0; }
+    .btn[disabled] { opacity: 0.6; }
+    .avatar { display: flex; align-items: center; gap: 14px; width: 100%; max-width: 340px; padding: 10px;
+      background: #fff; border-radius: 18px; border: 1px solid #E8EAED; }
+    .avatar img { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; }
+    .avatar h3 { font-size: 0.95rem; font-weight: 700; }
+    .avatar p { color: #5F6368; font-size: 0.85rem; }
+    .avatar a { margin-left: auto; color: #1A73E8; font-weight: 700; font-size: 0.9rem; text-decoration: none; }
+    .loading { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 36px 16px; text-align: center; }
+    .spinner { width: 44px; height: 44px; border: 4px solid #E8EAED; border-top-color: #1A73E8; border-radius: 50%;
+      animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .msg { color: #5F6368; font-size: 0.95rem; line-height: 1.5; }
+    .hint { color: #9AA0A6; font-size: 0.82rem; line-height: 1.5; }
+    .hidden { display: none !important; }
+    footer { color: #9AA0A6; font-size: 0.78rem; margin-top: auto; text-align: center; }
   </style>
 </head>
 <body>
-  <span class="badge">\\u2728 Building Motion with AI</span>
-  <h1>Your Motion Avatar</h1>
-  <p class="sub">Original vs AI \\u2014 see the transformation</p>
+  <div class="brand">
+    <span class="dots"><i style="background:#4285F4"></i><i style="background:#EA4335"></i><i style="background:#FBBC04"></i><i style="background:#34A853"></i></span>
+    Building Motion with AI
+  </div>
+  <h1>Videon</h1>
+  <p class="sub">Aynı hareket, yeni sen.</p>
 
   <div id="loading-state" class="loading">
     <div class="spinner"></div>
-    <p id="stage-text" class="pulse stage-msg">
-      Your video is being generated by AI...<br>This usually takes 1-2 minutes.
-    </p>
-    <p id="elapsed" style="color:rgba(255,255,255,0.3);font-size:0.8rem;margin-top:4px;font-variant-numeric:tabular-nums"></p>
-    <p class="stage-hint">
-      You can leave this page open --<br>your video will appear automatically!
-    </p>
+    <p id="stage-text" class="msg">Video yapay zekayla oluşturuluyor.<br>Genelde 1-2 dakika sürüyor.</p>
+    <p id="elapsed" class="hint" style="font-variant-numeric:tabular-nums"></p>
+    <p class="hint">Bu sayfayı açık bırakabilirsin,<br>video hazır olunca kendiliğinden açılacak.</p>
   </div>
 
-  <!-- Timeout state -->
   <div id="timeout-state" class="loading hidden">
-    <div style="font-size:3rem">&#x23F0;</div>
-    <p style="color:#fff;font-size:1.1rem;font-weight:700;text-align:center">
-      Your video session may have ended
-    </p>
-    <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;text-align:center;max-width:260px">
-      This can happen if the kiosk was restarted or the session timed out.
-    </p>
-    <p style="color:rgba(255,255,255,0.7);font-size:0.95rem;font-weight:600;text-align:center;margin-top:8px">
-      Head back to the booth<br>and record again!
-    </p>
+    <div style="font-size:2.6rem">&#x23F0;</div>
+    <p style="font-weight:700;font-size:1.05rem">Video bulunamadı</p>
+    <p class="msg">Oturum sona ermiş olabilir.<br>Standa dönüp tekrar kaydedebilirsin.</p>
   </div>
 
-  <div id="ready-state" class="hidden">
-    <video id="main-video" autoplay loop playsinline muted controls
-      onerror="document.getElementById('video-error').style.display='flex'"></video>
-    <div id="video-error" style="display:none;flex-direction:column;align-items:center;gap:12px;color:rgba(255,255,255,0.5);text-align:center;font-size:0.85rem;max-width:280px;">
-      <span style="font-size:2rem">&#x26A0;&#xFE0F;</span>
-      Video failed to load. Use the Save button below.
-    </div>
-  </div>
-
-  <!-- Avatar section (shown when ready + avatar exists) -->
-  <div id="avatar-section" class="avatar-section hidden">
-    <img id="avatar-img" src="" alt="Your AI avatar">
-    <div class="info">
-      <h3>Your AI Avatar</h3>
-      <p>Generated by Gemini</p>
-    </div>
+  <div id="ready-state" class="card hidden">
+    <video id="main-video" autoplay loop playsinline muted controls></video>
   </div>
 
   <div id="action-buttons" class="buttons hidden">
-    <a class="btn btn-save" id="download-link" href="#" download="my-motion-avatar.mp4">
+    <button class="btn btn-primary hidden" id="share-btn" type="button">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      Paylaş
+    </button>
+    <a class="btn btn-secondary" id="download-link" href="#" download="building-motion-with-ai.mp4">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Save Video
+      Videoyu indir
     </a>
-    <a class="btn btn-save-avatar hidden" id="avatar-download-link" href="#" download="my-avatar.png">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      Save Avatar Image
-    </a>
-
   </div>
 
+  <div id="avatar-section" class="avatar hidden">
+    <img id="avatar-img" src="" alt="Avatarın">
+    <div>
+      <h3>Avatarın</h3>
+      <p>Nano Banana çizdi</p>
+    </div>
+    <a id="avatar-download-link" href="#" download="avatar.png" target="_blank" rel="noopener">İndir</a>
+  </div>
+
+  <footer>DevFest &middot; Gemini, Nano Banana ve Veo ile yapıldı</footer>
+
   <script>
-    const STATUS_URL = "{api_status_url}";
-    let videoUrl = null;
+    const STATUS_URL = "__STATUS_URL__";
+    const DOWNLOAD_URL = "__DOWNLOAD_URL__";
     const stageText = document.getElementById('stage-text');
     const elapsedEl = document.getElementById('elapsed');
     const startTime = Date.now();
 
-    const STAGE_MESSAGES = {{
-      generating: 'Your video is being generated by AI...<br>This usually takes 1-2 minutes.',
-      composing: 'Almost there!<br>Composing your final video...',
-    }};
-
-    // Stage-aware timeouts (milliseconds)
-    const STAGE_TIMEOUTS = {{ generating: 5 * 60 * 1000, composing: 4 * 60 * 1000 }};
+    const STAGE_MESSAGES = {
+      generating: 'Video yapay zekayla oluşturuluyor.<br>Genelde 1-2 dakika sürüyor.',
+      composing: 'Neredeyse bitti,<br>video hazırlanıyor...',
+    };
+    const STAGE_TIMEOUTS = { generating: 5 * 60 * 1000, composing: 4 * 60 * 1000 };
     let currentStage = 'generating';
     let stageStartTime = Date.now();
 
-    function formatTime(ms) {{
+    function formatTime(ms) {
       const s = Math.floor(ms / 1000);
-      const m = Math.floor(s / 60);
-      const sec = s % 60;
-      return m + ':' + String(sec).padStart(2, '0');
-    }}
+      return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    }
 
-    function showTimeout() {{
+    function showTimeout() {
       document.getElementById('loading-state').classList.add('hidden');
       document.getElementById('timeout-state').classList.remove('hidden');
-    }}
+    }
 
-    async function pollForVideo() {{
-      while (true) {{
-        // Update elapsed timer
-        elapsedEl.textContent = 'Waiting: ' + formatTime(Date.now() - startTime);
-
-        // Check stage timeout
-        const stageElapsed = Date.now() - stageStartTime;
-        const limit = STAGE_TIMEOUTS[currentStage] || 5 * 60 * 1000;
-        if (stageElapsed > limit) {{
+    async function pollForVideo() {
+      while (true) {
+        elapsedEl.textContent = 'Geçen süre: ' + formatTime(Date.now() - startTime);
+        if (Date.now() - stageStartTime > (STAGE_TIMEOUTS[currentStage] || 5 * 60 * 1000)) {
           showTimeout();
           return;
-        }}
-
-        try {{
+        }
+        try {
           const res = await fetch(STATUS_URL);
-          if (res.ok) {{
+          if (res.ok) {
             const data = await res.json();
-            if (data.stage === 'ready' && data.download_url) {{
+            if (data.stage === 'ready' && data.download_url) {
               showVideo(data.download_url, data.avatar_url);
               return;
-            }}
-            // Track stage transitions
-            if (data.stage !== currentStage) {{
+            }
+            if (data.stage !== currentStage) {
               currentStage = data.stage;
               stageStartTime = Date.now();
-            }}
-            if (STAGE_MESSAGES[data.stage]) {{
-              stageText.innerHTML = STAGE_MESSAGES[data.stage];
-            }}
-          }}
-        }} catch (e) {{ }}
+            }
+            if (STAGE_MESSAGES[data.stage]) stageText.innerHTML = STAGE_MESSAGES[data.stage];
+          }
+        } catch (e) { }
         await new Promise(r => setTimeout(r, 2000));
-      }}
-    }}
+      }
+    }
 
-    const DOWNLOAD_URL = "{api_download_url}";
+    // The phone's own share sheet, so people can pick Instagram, WhatsApp, LinkedIn...
+    // The file is fetched up front: iOS only opens the sheet straight from the tap.
+    let shareFile = null;
+    async function prepareShare() {
+      if (!navigator.share || !navigator.canShare) return;
+      try {
+        const res = await fetch(DOWNLOAD_URL);
+        if (!res.ok) return;
+        const blob = await res.blob();
+        const file = new File([blob], 'building-motion-with-ai.mp4', { type: 'video/mp4' });
+        if (!navigator.canShare({ files: [file] })) return;
+        shareFile = file;
+        document.getElementById('share-btn').classList.remove('hidden');
+      } catch (e) { }
+    }
 
-    function showVideo(url, avatarUrl) {{
-      videoUrl = url;
+    document.getElementById('share-btn').addEventListener('click', async () => {
+      if (!shareFile) return;
+      try {
+        await navigator.share({ files: [shareFile], title: 'Building Motion with AI' });
+      } catch (e) { }
+    });
+
+    function showVideo(url, avatarUrl) {
       document.getElementById('loading-state').classList.add('hidden');
       document.getElementById('ready-state').classList.remove('hidden');
       document.getElementById('action-buttons').classList.remove('hidden');
       document.getElementById('main-video').src = url;
-      // Use same-origin proxy URL for download (fixes iOS Safari)
+      // same-origin proxy so iOS Safari saves the file instead of opening it
       document.getElementById('download-link').href = DOWNLOAD_URL;
-
-      // Show avatar if available
-      if (avatarUrl) {{
+      if (avatarUrl) {
         document.getElementById('avatar-section').classList.remove('hidden');
         document.getElementById('avatar-img').src = avatarUrl;
-        const avatarDl = document.getElementById('avatar-download-link');
-        avatarDl.href = avatarUrl;
-        avatarDl.classList.remove('hidden');
-      }}
-    }}
+        document.getElementById('avatar-download-link').href = avatarUrl;
+      }
+      prepareShare();
+    }
 
     pollForVideo();
   </script>
 </body>
 </html>"""
-
-    return HTMLResponse(content=html)

@@ -7,7 +7,7 @@ const BASE_AVATAR_STYLES: AvatarStyle[] = [
   {
     id: 'pixel-hero',
     name: 'Pixel Hero',
-    description: 'Retro pixel data scientist',
+    description: 'Retro piksel kahraman',
     emoji: '🎮',
     color: '#EA4335',
     previewImage: '/previews/pixel-hero.png',
@@ -15,7 +15,7 @@ const BASE_AVATAR_STYLES: AvatarStyle[] = [
   {
     id: 'cyber-nova',
     name: 'Cyber Nova',
-    description: 'Chrome Google android',
+    description: 'Krom Google androidi',
     emoji: '🤖',
     color: '#4285F4',
     previewImage: '/previews/cyber-nova.png',
@@ -23,7 +23,7 @@ const BASE_AVATAR_STYLES: AvatarStyle[] = [
   {
     id: 'watercolor-dream',
     name: 'Watercolor Dream',
-    description: 'Abstract color-field silhouette',
+    description: 'Suluboya siluet',
     emoji: '🎨',
     color: '#34A853',
     previewImage: '/previews/watercolor-dream.png',
@@ -31,7 +31,7 @@ const BASE_AVATAR_STYLES: AvatarStyle[] = [
   {
     id: '3d-figurine',
     name: '3D Figurine',
-    description: 'Google panda collectible',
+    description: 'Koleksiyonluk figür',
     emoji: '🧸',
     color: '#FBBC05',
     previewImage: '/previews/3d-figurine.png',
@@ -39,7 +39,7 @@ const BASE_AVATAR_STYLES: AvatarStyle[] = [
   {
     id: 'manga-ink',
     name: 'Manga Ink',
-    description: 'B&W manga thumbs-up',
+    description: 'Siyah beyaz manga',
     emoji: '✒️',
     color: '#9C27B0',
     previewImage: '/previews/manga-ink.png',
@@ -47,7 +47,7 @@ const BASE_AVATAR_STYLES: AvatarStyle[] = [
   {
     id: 'brick-build',
     name: 'Brick Build',
-    description: 'Brick-built Google G',
+    description: 'Oyuncak tuğlalardan',
     emoji: '🧱',
     color: '#FF6D00',
     previewImage: '/previews/brick-build.png',
@@ -57,48 +57,48 @@ const BASE_AVATAR_STYLES: AvatarStyle[] = [
 const BASE_LOCATION_THEMES: LocationTheme[] = [
   {
     id: 'lunar-surface',
-    name: 'Lunar Surface',
-    description: 'Moonscape with Earth rising',
+    name: 'Ay Yüzeyi',
+    description: 'Ufukta yükselen Dünya',
     emoji: '🌙',
     color: '#B8C4E8',
     previewImage: '/previews/lunar-surface.png',
   },
   {
     id: 'golden-desert',
-    name: 'Golden Desert',
-    description: 'Ancient ruins in epic dunes',
+    name: 'Altın Çöl',
+    description: 'Kum tepelerinde antik kalıntılar',
     emoji: '🏜️',
     color: '#E8A94A',
     previewImage: '/previews/golden-desert.png',
   },
   {
     id: 'neon-city',
-    name: 'Neon City',
-    description: 'Cyberpunk metropolis at night',
+    name: 'Neon Şehir',
+    description: 'Gece vakti siberpunk şehir',
     emoji: '🌃',
     color: '#E8487A',
     previewImage: '/previews/neon-city.png',
   },
   {
     id: 'space-station',
-    name: 'Space Station',
-    description: 'Orbital command center',
+    name: 'Uzay İstasyonu',
+    description: 'Yörüngedeki komuta merkezi',
     emoji: '🚀',
     color: '#4285F4',
     previewImage: '/previews/space-station.png',
   },
   {
     id: 'enchanted-forest',
-    name: 'Enchanted Forest',
-    description: 'Bioluminescent mystical woods',
+    name: 'Büyülü Orman',
+    description: 'Işıl ışıl parlayan orman',
     emoji: '🌲',
     color: '#34A853',
     previewImage: '/previews/enchanted-forest.png',
   },
   {
     id: 'underwater-palace',
-    name: 'Underwater Palace',
-    description: 'Ancient temple beneath the sea',
+    name: 'Su Altı Sarayı',
+    description: 'Denizin altında antik tapınak',
     emoji: '🌊',
     color: '#00BCD4',
     previewImage: '/previews/underwater-palace.png',
@@ -114,18 +114,18 @@ export const LOCATION_THEMES: LocationTheme[] = ACTIVE_EVENT
   : BASE_LOCATION_THEMES;
 
 export const PROCESSING_TIPS = [
-  'Powered by Veo 3.1 on Vertex AI',
-  'Analyzing 150 frames of motion data',
-  'Your personalized avatar is coming to life',
-  'Using Gemini 3.1 Pro for motion understanding',
+  'Video Vertex AI üzerinde Veo 3.1 ile üretiliyor',
+  'Gemini hareketini kare kare inceledi',
+  'Avatarın canlanıyor',
+  'Hareketin Veo için adım adım tarif edildi',
 ];
 
 export const ANALYSIS_LINES = [
-  'Detecting body movement...',
-  'Arms: raised overhead, sweeping motion',
-  'Legs: weight shifting left to right',
-  'Tempo: medium | Energy: high',
-  'Style: fluid, dance-like',
+  'Vücut hareketi algılanıyor...',
+  'Kollar: başın üstünde, geniş bir hareket',
+  'Bacaklar: ağırlık soldan sağa geçiyor',
+  'Tempo: orta | Enerji: yüksek',
+  'Stil: akıcı, dans gibi',
 ];
 
 export const mockDelay = (ms: number): Promise<void> =>
@@ -137,7 +137,7 @@ export function getMockAvatarImageUrl(styleColor: string): string {
     <rect width="400" height="400" fill="${styleColor}" opacity="0.2" rx="20"/>
     <circle cx="200" cy="150" r="80" fill="${styleColor}" opacity="0.6"/>
     <rect x="120" y="250" width="160" height="120" rx="20" fill="${styleColor}" opacity="0.6"/>
-    <text x="200" y="380" text-anchor="middle" font-size="24" fill="white" opacity="0.8">Avatar Preview</text>
+    <text x="200" y="380" text-anchor="middle" font-size="24" fill="white" opacity="0.8">Avatar önizleme</text>
   </svg>`;
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }

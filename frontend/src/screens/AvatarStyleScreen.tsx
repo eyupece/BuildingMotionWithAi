@@ -12,11 +12,11 @@ export function AvatarStyleScreen({ onSelect, onBack, onTimeout }: AvatarStyleSc
   return (
     <ChoiceScreen
       step={2}
-      title="Choose your style"
-      subtitle="Nano Banana will draw your avatar in this style"
+      title="Stilini seç"
+      subtitle="Nano Banana avatarını bu stilde çizecek"
       items={AVATAR_STYLES}
-      cta={(s) => `Continue with ${s.name}`}
-      placeholder="Select a style"
+      cta={(s) => `${s.name} ile devam et`}
+      placeholder="Bir stil seç"
       onSelect={onSelect}
       onBack={onBack}
       onTimeout={onTimeout}

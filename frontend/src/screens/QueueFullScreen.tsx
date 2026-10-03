@@ -48,9 +48,9 @@ export function QueueFullScreen({ onReady }: QueueFullScreenProps) {
         transition={{ duration: 0.5 }}
         className="card flex flex-col items-center gap-5 px-6 sm:px-12 py-10 text-center max-w-lg w-full"
       >
-        <h2 className="text-3xl sm:text-4xl font-bold text-ink">We're at capacity</h2>
+        <h2 className="text-3xl sm:text-4xl font-bold text-ink">Şu an dolu</h2>
         <p className="text-muted text-lg">
-          All {maxJobs} video slots are in use right now. Your turn is coming up.
+          {maxJobs} video sırasının hepsi şu an kullanımda. Sıra birazdan sana gelecek.
         </p>
 
         <div className="flex items-center gap-3 mt-2">
@@ -64,14 +64,14 @@ export function QueueFullScreen({ onReady }: QueueFullScreenProps) {
             />
           ))}
         </div>
-        <p className="text-muted text-sm">{activeJobs}/{maxJobs} videos processing</p>
+        <p className="text-muted text-sm">{activeJobs}/{maxJobs} video işleniyor</p>
 
         <motion.p
           animate={{ opacity: [0.4, 0.9, 0.4] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           className="text-muted text-sm"
         >
-          Checking for a free slot...
+          Boş yer bekleniyor...
         </motion.p>
       </motion.div>
     </div>

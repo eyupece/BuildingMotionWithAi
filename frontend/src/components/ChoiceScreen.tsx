@@ -43,7 +43,7 @@ export function ChoiceScreen<T extends AvatarStyle>({
     <div className="flex-1 flex flex-col w-full max-w-6xl mx-auto px-4 sm:px-8 pt-2" onPointerDown={resetTimer}>
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="flex-shrink-0 mb-4 sm:mb-5">
         <button onClick={onBack} className="inline-flex items-center gap-1.5 text-muted hover:text-ink text-sm font-medium mb-3">
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" /> Geri
         </button>
         <div className="flex items-end justify-between gap-4">
           <div>
