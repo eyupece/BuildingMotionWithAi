@@ -69,7 +69,8 @@ CITIES = {
                  "in oil. Warm light from the upper left, deep shadows, visible brushwork. Keep the dark "
                  "background, the red curtain on the right and the column.",
             "b": "Paint the person into image 2 as a 17th century Dutch portrait in a black doublet with a large "
-                 "white lace collar. Warm light from the upper left, visible brushwork. Keep the dark "
+                 "white lace collar. Keep their own hairstyle, hair color and the smile from the photo. "
+                 "Warm light from the upper left, visible brushwork. Keep the dark "
                  "background, the red curtain on the right and the column.",
             "c": "Paint the person into image 2 as a Velazquez portrait in a dark cloak. Soft light, loose "
                  "brushwork. Keep the dark background, the red curtain on the right and the column.",
