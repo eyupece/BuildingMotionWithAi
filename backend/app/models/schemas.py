@@ -63,3 +63,4 @@ class ShareStatusResponse(BaseModel):
     stage: str  # "generating" | "composing" | "ready"
     download_url: Optional[str] = None
     avatar_url: Optional[str] = None
+    avatar_video_url: Optional[str] = None  # the AI video alone, without the recording on top

@@ -93,6 +93,17 @@ def _get_or_compose(video_id: str) -> str:
                     pass
 
 
+def _avatar_video_url(video_id: str) -> str | None:
+    """Signed URL for the AI video on its own (the bottom half of the share video)."""
+    uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/trimmed_3s.mp4"
+    try:
+        if storage_service.gcs_blob_exists(uri):
+            return storage_service.generate_video_signed_url(uri)
+    except Exception:  # noqa: BLE001
+        pass
+    return None
+
+
 @router.get("/share/{video_id}", response_model=ShareResponse)
 async def get_share(video_id: str, request: Request):
     """Return download URL for the composed video and a share page URL for the QR code."""
@@ -108,15 +119,22 @@ async def get_share(video_id: str, request: Request):
 
 
 @router.get("/share/{video_id}/download")
-async def download_video(video_id: str):
+async def download_video(video_id: str, v: str = ""):
     """Same-origin proxy that streams the composed video with attachment headers.
 
     This fixes iOS Safari which ignores the HTML5 `download` attribute on
     cross-origin links (GCS signed URLs live on storage.googleapis.com).
     Works on all platforms: iOS Safari, Android Chrome, desktop browsers.
     """
+    filename = "building-motion-with-ai.mp4"
     try:
-        signed_url = _get_or_compose(video_id)
+        if v == "avatar":
+            signed_url = _avatar_video_url(video_id)
+            if not signed_url:
+                raise HTTPException(status_code=404, detail="Avatar video not found")
+            filename = "building-motion-with-ai-avatar.mp4"
+        else:
+            signed_url = _get_or_compose(video_id)
     except HTTPException:
         raise
     except Exception as exc:
@@ -133,7 +151,7 @@ async def download_video(video_id: str):
         _stream(),
         media_type="video/mp4",
         headers={
-            "Content-Disposition": 'attachment; filename="building-motion-with-ai.mp4"',
+            "Content-Disposition": f'attachment; filename="{filename}"',
         },
     )
 
@@ -163,6 +181,7 @@ async def get_share_status(video_id: str):
                 stage="ready",
                 download_url=signed_url,
                 avatar_url=_get_avatar_url(video_id),
+                avatar_video_url=_avatar_video_url(video_id),
             )
         except Exception:  # noqa: BLE001
             pass
@@ -176,6 +195,7 @@ async def get_share_status(video_id: str):
                 stage="ready",
                 download_url=signed_url,
                 avatar_url=_get_avatar_url(video_id),
+                avatar_video_url=_avatar_video_url(video_id),
             )
         except Exception:  # noqa: BLE001
             pass
@@ -261,6 +281,11 @@ _SHARE_PAGE = """<!DOCTYPE html>
     @keyframes spin { to { transform: rotate(360deg); } }
     .msg { color: #5F6368; font-size: 0.95rem; line-height: 1.5; }
     .hint { color: #9AA0A6; font-size: 0.82rem; line-height: 1.5; }
+    .switch { display: flex; width: 100%; max-width: 340px; padding: 4px; background: #E8EAED; border-radius: 999px; }
+    .switch button { flex: 1; padding: 10px; border: none; border-radius: 999px; background: none; font: inherit;
+      font-size: 0.9rem; font-weight: 700; color: #5F6368; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .switch button.on { background: #fff; color: #1A73E8; box-shadow: 0 1px 3px rgba(60,64,67,0.2); }
+    video.fit { object-fit: contain; }
     .hidden { display: none !important; }
     footer { color: #9AA0A6; font-size: 0.78rem; margin-top: auto; text-align: center; }
   </style>
@@ -284,6 +309,11 @@ _SHARE_PAGE = """<!DOCTYPE html>
     <div style="font-size:2.6rem">&#x23F0;</div>
     <p style="font-weight:700;font-size:1.05rem">Video bulunamadı</p>
     <p class="msg">Oturum sona ermiş olabilir.<br>Standa dönüp tekrar kaydedebilirsin.</p>
+  </div>
+
+  <div id="variant" class="switch hidden">
+    <button type="button" class="on" data-v="both">Benimle birlikte</button>
+    <button type="button" data-v="avatar">Sadece avatar</button>
   </div>
 
   <div id="ready-state" class="card hidden">
@@ -349,7 +379,7 @@ _SHARE_PAGE = """<!DOCTYPE html>
           if (res.ok) {
             const data = await res.json();
             if (data.stage === 'ready' && data.download_url) {
-              showVideo(data.download_url, data.avatar_url);
+              showVideo(data.download_url, data.avatar_url, data.avatar_video_url);
               return;
             }
             if (data.stage !== currentStage) {
@@ -363,42 +393,67 @@ _SHARE_PAGE = """<!DOCTYPE html>
       }
     }
 
+    // Two versions: the share video (recording on top, AI below) and the AI video alone.
+    const variants = { both: { download: DOWNLOAD_URL, name: 'building-motion-with-ai.mp4' } };
+    let current = 'both';
+    const shareBtn = document.getElementById('share-btn');
+
     // The phone's own share sheet, so people can pick Instagram, WhatsApp, LinkedIn...
-    // The file is fetched up front: iOS only opens the sheet straight from the tap.
-    let shareFile = null;
-    async function prepareShare() {
+    // Files are fetched up front: iOS only opens the sheet straight from the tap.
+    async function prepareShare(key) {
+      const v = variants[key];
       if (!navigator.share || !navigator.canShare) return;
       try {
-        const res = await fetch(DOWNLOAD_URL);
+        const res = await fetch(v.download);
         if (!res.ok) return;
         const blob = await res.blob();
-        const file = new File([blob], 'building-motion-with-ai.mp4', { type: 'video/mp4' });
+        const file = new File([blob], v.name, { type: 'video/mp4' });
         if (!navigator.canShare({ files: [file] })) return;
-        shareFile = file;
-        document.getElementById('share-btn').classList.remove('hidden');
+        v.file = file;
+        if (key === current) shareBtn.classList.remove('hidden');
       } catch (e) { }
     }
 
-    document.getElementById('share-btn').addEventListener('click', async () => {
-      if (!shareFile) return;
+    shareBtn.addEventListener('click', async () => {
+      const file = variants[current].file;
+      if (!file) return;
       try {
-        await navigator.share({ files: [shareFile], title: 'Building Motion with AI' });
+        await navigator.share({ files: [file], title: 'Building Motion with AI' });
       } catch (e) { }
     });
 
-    function showVideo(url, avatarUrl) {
+    function pick(key) {
+      current = key;
+      const v = variants[key];
+      const video = document.getElementById('main-video');
+      video.src = v.url;
+      video.classList.toggle('fit', key === 'avatar');
+      document.getElementById('download-link').href = v.download;
+      document.getElementById('download-link').setAttribute('download', v.name);
+      shareBtn.classList.toggle('hidden', !v.file);
+      document.querySelectorAll('#variant button').forEach(b => b.classList.toggle('on', b.dataset.v === key));
+    }
+
+    document.querySelectorAll('#variant button').forEach(b => b.addEventListener('click', () => pick(b.dataset.v)));
+
+    function showVideo(url, avatarUrl, avatarVideoUrl) {
       document.getElementById('loading-state').classList.add('hidden');
       document.getElementById('ready-state').classList.remove('hidden');
       document.getElementById('action-buttons').classList.remove('hidden');
-      document.getElementById('main-video').src = url;
-      // same-origin proxy so iOS Safari saves the file instead of opening it
-      document.getElementById('download-link').href = DOWNLOAD_URL;
+      variants.both.url = url;
+      if (avatarVideoUrl) {
+        variants.avatar = { url: avatarVideoUrl, download: DOWNLOAD_URL + '?v=avatar', name: 'building-motion-with-ai-avatar.mp4' };
+        document.getElementById('variant').classList.remove('hidden');
+      }
+      // download goes through the same-origin proxy so iOS Safari saves the file
+      pick('both');
       if (avatarUrl) {
         document.getElementById('avatar-section').classList.remove('hidden');
         document.getElementById('avatar-img').src = avatarUrl;
         document.getElementById('avatar-download-link').href = avatarUrl;
       }
-      prepareShare();
+      prepareShare('both');
+      if (variants.avatar) prepareShare('avatar');
     }
 
     pollForVideo();
