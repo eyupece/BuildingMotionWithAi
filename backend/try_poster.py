@@ -5,12 +5,13 @@ the prompts come from DRAFTS below. When a draft looks good, copy it into
 app/events/<city>.py.
 
     cd ~/BuildingMotionWithAi/backend
-    pip install -q google-genai google-cloud-storage pydantic-settings pillow imageio-ffmpeg
+    pip install -q google-genai google-cloud-storage pydantic-settings pillow imageio-ffmpeg opencv-python-headless
     python3 try_poster.py kastamonu <video_id> [<video_id> ...]   # 2 stills per person
     python3 try_poster.py kastamonu <video_id> --video 1           # still 1 comes to life
 
 video_id is the one from the share link. Stills are cheap, each video is one
-Veo run and uses that recording's moves.
+Veo run and uses that recording's moves. If a Veo video for that still is
+already in the bucket it is reused; add --new for a fresh one.
 """
 
 import argparse
@@ -94,6 +95,16 @@ async def make_video(args, key, settings, bucket):
     from app.services.gemini_service import analyze_video_sync
 
     video_id = args.video_ids[0]
+    tag = f"-{video_id[:8]}-{args.video}/"
+    done = sorted(
+        b.name for b in bucket.list_blobs(prefix=f"tries/{args.city}-")
+        if tag in b.name and b.name.endswith(".mp4") and not b.name.endswith("poster.mp4")
+    )
+    if done and not args.new:
+        print(f"Using the Veo video from before: {done[-1]}")
+        await paste(done[-1], key, settings, bucket)
+        return
+
     still = TRIES / f"{args.city}-{video_id}-{args.video}.png"
     if not still.exists():
         sys.exit(f"Make the stills first, {still.name} is missing.")
@@ -125,6 +136,13 @@ async def make_video(args, key, settings, bucket):
         sys.exit(f"Veo failed: {op.error or 'no video (maybe blocked by the safety filter)'}")
 
     raw = op.result.generated_videos[0].video.uri.removeprefix(f"gs://{settings.GCS_BUCKET}/")
+    await paste(raw, key, settings, bucket)
+
+
+async def paste(raw, key, settings, bucket):
+    from app.services import poster_service
+
+    out = raw.rsplit("/", 1)[0] + "/"
     with tempfile.TemporaryDirectory() as tmp:
         local = Path(tmp) / "in.mp4"
         bucket.blob(raw).download_to_filename(local)
@@ -141,6 +159,7 @@ def main():
     ap.add_argument("video_ids", nargs="+")
     ap.add_argument("--n", type=int, default=2, help="stills per person")
     ap.add_argument("--video", help="animate this still (1, 2...)")
+    ap.add_argument("--new", action="store_true", help="make a new Veo video even if one exists")
     args = ap.parse_args()
 
     from google.cloud import storage
