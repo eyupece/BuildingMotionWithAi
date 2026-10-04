@@ -1,6 +1,6 @@
 """DevFest Kastamonu 2026.
 
-The poster: a Kastamonu weaver at her loom. The poster kit stitches you into
+The poster: a Kastamonu weaver at her loom. The poster kit draws you into
 the cloth on that loom, and the Kastamonu street is a world for the other styles.
 """
 
@@ -13,20 +13,28 @@ POSTER = {
     "woven": True,
     # the cloth is small in the poster, so the video starts close on it and pulls back
     "zoom": 2.5,
-    "art": "a portrait woven into a cream kilim cloth on a loom",
+    "art": "a warm engraving-style illustration woven into a cream kilim cloth on a loom",
+    # Cross-stitch didn't survive Veo's motion, so the poster's own engraving look instead.
+    # Always upright and facing forward, people often record leaning back or from below.
     "portrait": (
-        "Stitch the person onto the cream linen of image 2 as cross-stitch embroidery in rust red, "
-        "indigo blue, mustard and moss green thread. "
+        "Draw the person onto the cream cloth of image 2 as a picture woven into the kilim, in the same "
+        "style as a warm old storybook engraving: fine dark brown ink lines with cross-hatching, soft sepia "
+        "shading and muted rust red, indigo blue, mustard and moss green, the cloth texture showing through. "
+        "Draw them sitting upright and facing the viewer, even if the photo is tilted, taken from below "
+        "or they are lying down. "
         # hands have to be in the picture from the start, or Veo makes up extra ones
         "Waist-up, filling the width of the picture, centered, head in the upper third. "
         "Both hands fully visible, resting in front of the body in the lower part."
     ),
-    # Veo kept the stitched hands on the table and grew a third arm, pushed toward the camera
+    # Veo used to keep the resting hands and grow a third arm, pushed toward the camera
     "video_rules": (
         "A hand that rises is one of the two resting hands and leaves its place, so the person never "
         "has more than two hands. The hands stay at the same distance as the body, never come toward "
-        "the camera and never cover the face. The raised hand stays cross-stitch like the rest."
+        "the camera and never cover the face. Every moving part keeps the same ink lines and color "
+        "wash as the rest of the drawing."
     ),
+    # how much of the drawing shows over the cloth texture, less washed it out
+    "keep": 0.6,
 }
 
 LOCATION_KEY = 'kastamonu'

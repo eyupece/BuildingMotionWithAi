@@ -34,28 +34,9 @@ sys.path.insert(0, str(ROOT))
 TRIES = ROOT / "tries"
 
 DRAFTS = {
-    # the poster's own warm engraving look instead of cross-stitch
-    "kastamonu": {
-        "key": "kastamonu-afis",
-        "art": "a warm engraving-style illustration woven into a cream kilim cloth on a loom",
-        "portrait": (
-            "Draw the person onto the cream cloth of image 2 as a picture woven into the kilim, in the same "
-            "style as a warm old storybook engraving: fine dark brown ink lines with cross-hatching, soft sepia "
-            "shading and muted rust red, indigo blue, mustard and moss green, the cloth texture showing through. "
-            "Draw them sitting upright and facing the viewer, even if the photo is tilted, taken from below "
-            "or they are lying down. "
-            "Waist-up, filling the width of the picture, centered, head in the upper third. "
-            "Both hands fully visible, resting in front of the body in the lower part."
-        ),
-        "video_rules": (
-            "A hand that rises is one of the two resting hands and leaves its place, so the person never "
-            "has more than two hands. The hands stay at the same distance as the body, never come toward "
-            "the camera and never cover the face. Every moving part keeps the same ink lines and color "
-            "wash as the rest of the drawing."
-        ),
-        # more of the drawing over the cloth, the old 0.35 washed it out
-        "keep": 0.6,
-    },
+    # Put a new prompt here to try it. Empty means the app's current one.
+    "kastamonu": {"key": "kastamonu-afis"},
+    "trabzon": {"key": "trabzon-afis"},
 }
 
 

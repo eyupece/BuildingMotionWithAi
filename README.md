@@ -40,7 +40,7 @@ Her DevFest'te o şehre ait bir dünya ekleniyor. Avatar stilleri codelab'dekile
 
 Bir de etkinliğin afişi var. Afiş stilini seçersen kendini afişin içinde buluyorsun. Afişe yapay zeka dokunmuyor, Nano Banana sadece boş yere seni çiziyor, Veo onu oynatıyor.
 
-- **Kastamonu:** Afişte tezgahtaki kumaşa kanaviçe olarak işleniyorsun. Diğer stillerle de konaklar, kale ve Saat Kulesi olan bir sokak var.
+- **Kastamonu:** Afişte tezgahtaki kumaşa, afişin kendi çizim tarzında dokunuyorsun. Diğer stillerle de konaklar, kale ve Saat Kulesi olan bir sokak var.
 - **Trabzon:** Afişteki altın çerçeveye dantel yakalı bir portre olarak giriyorsun. Diğer stillerle çay bahçeleri, liman, Ayasofya ve Sümela.
 
 Şehir prompt'ları `backend/app/events/` klasöründe, afişler `backend/app/events/posters/` içinde.
