@@ -120,7 +120,7 @@ def paste_still(portrait_bytes: bytes, key: str) -> bytes:
     art = _fit(portrait, w, h)
     if poster["woven"]:
         # multiply keeps the cloth texture and the border patterns on top
-        art = Image.blend(ImageChops.multiply(art, out.crop((x, y, x + w, y + h))), art, 0.35)
+        art = Image.blend(ImageChops.multiply(art, out.crop((x, y, x + w, y + h))), art, poster.get("keep", 0.35))
     out.paste(art, (x, y), _mask(poster))
     return _png(out)
 
@@ -204,10 +204,12 @@ def paste_video(video_path: str, key: str, seconds: float = 5.0) -> str:
         _mask(poster).save(mask)
         fit = f"crop=min(iw\\,ih*{w}/{h}):min(ih\\,iw*{h}/{w}),scale={w}:{h},setsar=1"
         if poster["woven"]:
+            # how much of the drawing shows over the cloth texture
+            keep = poster.get("keep", 0.35)
             graph = (
                 f"[0:v]split[p][q];[q]crop={w}:{h}:{x}:{y},format=gbrp[bg];"
                 f"[1:v]{fit},format=gbrp,split[v][v2];"
-                f"[v][bg]blend=all_mode=multiply[mul];[mul][v2]blend=all_expr='A*0.65+B*0.35',format=rgba[art];"
+                f"[v][bg]blend=all_mode=multiply[mul];[mul][v2]blend=all_expr='A*{1 - keep}+B*{keep}',format=rgba[art];"
             )
         else:
             graph = f"[0:v]copy[p];[1:v]{fit},format=rgba[art];"
