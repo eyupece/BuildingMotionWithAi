@@ -18,6 +18,13 @@ PHASE_MESSAGES = [
 ]
 
 
+def _save_frame(gcs_uri: str, video_id: str, timestamp: str) -> str:
+    """Pull the best frame out of the recording and store it (blocking, run in a thread)."""
+    local_path = storage_service.download_to_temp(gcs_uri, video_id)
+    frame_bytes = video_utils.extract_frame(local_path, timestamp)
+    return storage_service.upload_frame(video_id, frame_bytes)
+
+
 @router.post("/analyze/{video_id}")
 async def analyze_video(video_id: str):
     gcs_uri = f"gs://{settings.GCS_BUCKET}/uploads/{video_id}.webm"
@@ -45,10 +52,8 @@ async def analyze_video(video_id: str):
 
         # Best-effort: extract best frame and upload to GCS
         try:
-            local_path = storage_service.download_to_temp(gcs_uri, video_id)
             timestamp = analysis.get("best_frame_timestamp", "0:02")
-            frame_bytes = video_utils.extract_frame(local_path, timestamp)
-            frame_uri = storage_service.upload_frame(video_id, frame_bytes)
+            frame_uri = await asyncio.to_thread(_save_frame, gcs_uri, video_id, timestamp)
             analysis["frame_uri"] = frame_uri
         except Exception:
             logger.exception("Frame extraction failed for %s", video_id)

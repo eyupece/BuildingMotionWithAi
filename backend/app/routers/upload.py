@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -40,6 +41,6 @@ async def upload_video(request: Request, file: UploadFile = File(...)):
     print(f"  NEW VIDEO: {video_id}")
     print(f"  Share page: {share_url}")
     print(f"{'='*60}\n")
-    gcs_uri = storage_service.upload_video(video_id, data)
+    gcs_uri = await asyncio.to_thread(storage_service.upload_video, video_id, data)
 
     return UploadResponse(video_id=video_id, gcs_uri=gcs_uri, share_url=share_url)

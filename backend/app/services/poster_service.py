@@ -177,15 +177,20 @@ def poster_for(video_id: str) -> str | None:
 
 def _pull_back(poster: dict) -> str:
     """ffmpeg filters: hold close on the slot for a second, then ease back to the whole poster."""
+    # Zoomed frames get big, so work at a smaller size. The share video shows the
+    # poster under 1000px tall anyway, and ffmpeg here can block the server for long.
+    k = 0.7
     pw, ph = Image.open(_IMAGES / poster["image"]).size
-    x, y, w, h = poster["slot"]
+    pw, ph = round(pw * k / 2) * 2, round(ph * k / 2) * 2
+    x, y, w, h = (v * k for v in poster["slot"])
     cx, cy = x + w / 2, y + h / 2
     z0 = poster["zoom"]
     p = "clip((t-1)/3.5\\,0\\,1)"
     z = f"({z0}-{z0 - 1}*{p}*{p}*(3-2*{p}))"
     # crop keeps the first frame's iw/ih, so the position is worked out from t too
     return (
-        f"scale=w='trunc({pw}*{z}/2)*2':h='trunc({ph}*{z}/2)*2':eval=frame:flags=bicubic,"
+        f"scale={pw}:{ph},"
+        f"scale=w='trunc({pw}*{z}/2)*2':h='trunc({ph}*{z}/2)*2':eval=frame:flags=bilinear,"
         f"crop={pw}:{ph}:x='clip({cx}*{z}-{pw / 2}\\,0\\,{pw}*{z}-{pw})'"
         f":y='clip({cy}*{z}-{ph / 2}\\,0\\,{ph}*{z}-{ph})'"
     )

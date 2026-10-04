@@ -34,7 +34,7 @@ BACKEND_URL=$(gcloud run services describe gemini-motion-lab-backend --region "$
 if [ "$ONLY" != "frontend" ]; then
   echo "Deploying backend..."
   (cd backend && gcloud run deploy gemini-motion-lab-backend --source . --region "$REGION" \
-    --allow-unauthenticated --min-instances 1 --max-instances 1 --memory 2Gi --port 8080 $CPU \
+    --allow-unauthenticated --min-instances 1 --max-instances 1 --cpu 2 --memory 2Gi --port 8080 $CPU \
     --project "$GOOGLE_CLOUD_PROJECT" --quiet \
     --set-env-vars "GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GCS_BUCKET=$GCS_BUCKET,GCS_SIGNING_SA=$GCS_SIGNING_SA,GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI,MOCK_AI=$MOCK_AI,PUBLIC_BASE_URL=${BACKEND_URL:-$PUBLIC_BASE_URL}")
 

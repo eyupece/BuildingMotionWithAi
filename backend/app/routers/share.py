@@ -1,6 +1,6 @@
+import asyncio
 import logging
 import os
-import tempfile
 
 import httpx
 from fastapi import APIRouter, HTTPException, Request
@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 
 from ..config import settings
 from ..models.schemas import ShareResponse, ShareStatusResponse
-from ..services import storage_service, veo_service
+from ..services import storage_service, veo_service, video_utils
 from ..services.video_utils import compose_videos_side_by_side
 from .upload import _base_url
 
@@ -21,76 +21,73 @@ router = APIRouter()
 html_router = APIRouter()
 
 
-def _get_or_compose(video_id: str) -> str:
-    """Return a 24hr signed URL for the composed video, composing it if needed.
+def compose_sync(video_id: str, trimmed_gcs_uri: str | None = None) -> str:
+    """Make the share video (recording on top, AI video below) once and return its GCS URI.
 
-    Returns a signed GCS URL string.
-    Raises HTTPException on missing video or composition failure.
+    Blocking (ffmpeg), so call it from a thread. The lock keeps the pipeline and a
+    phone opening the page from composing the same video twice.
     """
-    # 1. In-memory cache hit — fastest path
-    if video_id in storage_service._composed_cache:
-        gcs_uri = storage_service._composed_cache[video_id]
-        return storage_service.generate_video_signed_url(gcs_uri)
+    with video_utils.video_lock(f"compose:{video_id}"):
+        if video_id in storage_service._composed_cache:
+            return storage_service._composed_cache[video_id]
 
-    # 2. Composed video already in GCS (survives server restarts)
-    composed_gcs_uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/composed.mp4"
-    if storage_service.gcs_blob_exists(composed_gcs_uri):
-        storage_service._composed_cache[video_id] = composed_gcs_uri
-        return storage_service.generate_video_signed_url(composed_gcs_uri)
+        # Composed video already in GCS (survives server restarts)
+        composed_gcs_uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/composed.mp4"
+        if storage_service.gcs_blob_exists(composed_gcs_uri):
+            storage_service._composed_cache[video_id] = composed_gcs_uri
+            return composed_gcs_uri
 
-    # 3. Need to compose — find the trimmed generated video
-    trimmed_gcs_uri = veo_service.get_completed_video_uri(video_id)
-    if not trimmed_gcs_uri:
-        # Server may have restarted — check GCS directly for the trimmed video
-        trimmed_gcs_uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/trimmed_3s.mp4"
-        if not storage_service.gcs_blob_exists(trimmed_gcs_uri):
-            raise HTTPException(
-                status_code=404,
-                detail=f"No completed video found for video_id={video_id}",
-            )
+        # Need to compose — find the trimmed generated video
+        if not trimmed_gcs_uri:
+            trimmed_gcs_uri = veo_service.get_completed_video_uri(video_id)
+        if not trimmed_gcs_uri:
+            # Server may have restarted — check GCS directly for the trimmed video
+            trimmed_gcs_uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/trimmed_3s.mp4"
+            if not storage_service.gcs_blob_exists(trimmed_gcs_uri):
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"No completed video found for video_id={video_id}",
+                )
 
-    # MOCK_AI: skip composition, return mock signed URL
-    if settings.MOCK_AI:
-        mock_uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/composed.mp4"
-        storage_service._composed_cache[video_id] = mock_uri
-        return storage_service.generate_video_signed_url(mock_uri)
+        # MOCK_AI: skip composition
+        if settings.MOCK_AI:
+            mock_uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/composed.mp4"
+            storage_service._composed_cache[video_id] = mock_uri
+            return mock_uri
 
-    original_path: str | None = None
-    generated_path: str | None = None
-    composed_path: str | None = None
+        original_path: str | None = None
+        generated_path: str | None = None
+        composed_path: str | None = None
+        try:
+            original_gcs = f"gs://{settings.GCS_BUCKET}/uploads/{video_id}.webm"
+            original_path = storage_service.download_to_temp(original_gcs, video_id)
+            generated_path = storage_service.download_gcs_video(trimmed_gcs_uri)
 
-    try:
-        # Download original webm
-        original_gcs = f"gs://{settings.GCS_BUCKET}/uploads/{video_id}.webm"
-        original_path = storage_service.download_to_temp(original_gcs, video_id)
+            # Compose 9:16 vertical video
+            composed_path = compose_videos_side_by_side(original_path, generated_path)
+            with open(composed_path, "rb") as f:
+                composed_data = f.read()
 
-        # Download trimmed generated mp4
-        generated_path = storage_service.download_gcs_video(trimmed_gcs_uri)
+            gcs_uri = storage_service.upload_composed_video(video_id, composed_data)
+            storage_service._composed_cache[video_id] = gcs_uri
+            return gcs_uri
+        except HTTPException:
+            raise
+        except Exception as exc:
+            logger.error("Composition failed for video_id=%s: %s", video_id, exc)
+            raise HTTPException(status_code=500, detail=f"Video composition failed: {exc}") from exc
+        finally:
+            for path in (original_path, generated_path, composed_path):
+                if path and os.path.exists(path):
+                    try:
+                        os.unlink(path)
+                    except OSError:
+                        pass
 
-        # Compose 9:16 vertical video
-        composed_path = compose_videos_side_by_side(original_path, generated_path)
 
-        # Upload to GCS and cache
-        with open(composed_path, "rb") as f:
-            composed_data = f.read()
-
-        gcs_uri = storage_service.upload_composed_video(video_id, composed_data)
-        storage_service._composed_cache[video_id] = gcs_uri
-
-        return storage_service.generate_video_signed_url(gcs_uri)
-
-    except HTTPException:
-        raise
-    except Exception as exc:
-        logger.error("Composition failed for video_id=%s: %s", video_id, exc)
-        raise HTTPException(status_code=500, detail=f"Video composition failed: {exc}") from exc
-    finally:
-        for path in (original_path, generated_path, composed_path):
-            if path and os.path.exists(path):
-                try:
-                    os.unlink(path)
-                except OSError:
-                    pass
+def _get_or_compose(video_id: str) -> str:
+    """Return a 24hr signed URL for the composed video, composing it if needed."""
+    return storage_service.generate_video_signed_url(compose_sync(video_id))
 
 
 def _avatar_video_url(video_id: str) -> str | None:
@@ -105,7 +102,7 @@ def _avatar_video_url(video_id: str) -> str | None:
 
 
 @router.get("/share/{video_id}", response_model=ShareResponse)
-async def get_share(video_id: str, request: Request):
+def get_share(video_id: str, request: Request):
     """Return download URL for the composed video and a share page URL for the QR code."""
     try:
         signed_url = _get_or_compose(video_id)
@@ -129,12 +126,12 @@ async def download_video(video_id: str, v: str = ""):
     filename = "building-motion-with-ai.mp4"
     try:
         if v == "avatar":
-            signed_url = _avatar_video_url(video_id)
+            signed_url = await asyncio.to_thread(_avatar_video_url, video_id)
             if not signed_url:
                 raise HTTPException(status_code=404, detail="Avatar video not found")
             filename = "building-motion-with-ai-avatar.mp4"
         else:
-            signed_url = _get_or_compose(video_id)
+            signed_url = await asyncio.to_thread(_get_or_compose, video_id)
     except HTTPException:
         raise
     except Exception as exc:
@@ -157,7 +154,7 @@ async def download_video(video_id: str, v: str = ""):
 
 
 @router.get("/share/{video_id}/status", response_model=ShareStatusResponse)
-async def get_share_status(video_id: str):
+def get_share_status(video_id: str):
     """Check video readiness — returns stage: generating | composing | ready."""
 
     def _get_avatar_url(vid: str) -> str | None:
@@ -214,7 +211,7 @@ async def get_share_status(video_id: str):
 
 
 @html_router.get("/share/{video_id}", response_class=HTMLResponse)
-async def share_page(video_id: str):
+def share_page(video_id: str):
     """Serve the mobile share landing page with stage-aware polling."""
     try:
         return _render_share_page(video_id)

@@ -1,8 +1,20 @@
 import shutil
 import subprocess
 import tempfile
+import threading
+
 import cv2
 import numpy as np  # noqa: F401  (kept for compatibility)
+
+
+_locks: dict[str, threading.Lock] = {}
+_locks_guard = threading.Lock()
+
+
+def video_lock(name: str) -> threading.Lock:
+    """One lock per job step, so the pipeline and a polling request don't both run ffmpeg."""
+    with _locks_guard:
+        return _locks.setdefault(name, threading.Lock())
 
 
 def _ffmpeg_exe() -> str | None:

@@ -10,7 +10,7 @@ export function getLastApiError(): string | null {
 
 async function retryWithBackoff<T>(
   fn: () => Promise<T>,
-  retries = 3,
+  retries = 4,
 ): Promise<T> {
   let lastErr: unknown;
   for (let attempt = 0; attempt < retries; attempt++) {

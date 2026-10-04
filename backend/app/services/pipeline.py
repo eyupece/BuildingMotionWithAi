@@ -106,42 +106,65 @@ async def _poll_until_complete(operation_id: str, video_id: str) -> str | None:
     return None
 
 
+# video_id -> trimmed GCS URI, shared with the status endpoint
+trimmed_uris: dict[str, str] = {}
+
+
+def trim_sync(gcs_uri: str, video_id: str) -> str | None:
+    """Download raw Veo output, trim, put it on the poster if needed, upload.
+
+    Blocking (ffmpeg), so call it from a thread. Runs once per video even when
+    the pipeline and a status poll ask at the same time.
+    """
+    if settings.MOCK_AI:
+        return None
+    with video_utils.video_lock(f"trim:{video_id}"):
+        if video_id in trimmed_uris:
+            return trimmed_uris[video_id]
+        done = f"gs://{settings.GCS_BUCKET}/output/{video_id}/trimmed_3s.mp4"
+        if storage_service.gcs_blob_exists(done):
+            trimmed_uris[video_id] = done
+            return done
+
+        local_full: str | None = None
+        local_trimmed: str | None = None
+        local_poster: str | None = None
+        try:
+            local_full = storage_service.download_gcs_video(gcs_uri)
+            local_trimmed = video_utils.trim_video(local_full, _TRIM_DURATION_S)
+            local_poster = poster_service.maybe_paste(local_trimmed, video_id)
+
+            with open(local_poster, "rb") as f:
+                trimmed_data = f.read()
+
+            trimmed_gcs_uri = storage_service.upload_trimmed_video(video_id, trimmed_data)
+            trimmed_uris[video_id] = trimmed_gcs_uri
+            logger.info("Pipeline: trimmed video uploaded for video_id=%s", video_id)
+            return trimmed_gcs_uri
+        except Exception:
+            logger.exception("Pipeline: trim failed for video_id=%s, will use raw video", video_id)
+            return None
+        finally:
+            for path in {local_full, local_trimmed, local_poster}:
+                if path:
+                    try:
+                        os.unlink(path)
+                    except OSError:
+                        pass
+
+
 async def _trim_video(gcs_uri: str, video_id: str) -> str | None:
-    """Download raw Veo output, trim to 3s, upload. Returns trimmed GCS URI or None."""
+    """Trim in a thread so the server keeps answering polls meanwhile."""
     if settings.MOCK_AI:
         # In mock mode, just mark as "trimmed" — skip actual file operations
         trimmed_uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/trimmed_3s.mp4"
         logger.info("Pipeline MOCK: skip trim for video_id=%s", video_id)
         return trimmed_uri
-
-    local_full: str | None = None
-    local_trimmed: str | None = None
-    local_poster: str | None = None
-    try:
-        local_full = storage_service.download_gcs_video(gcs_uri)
-        local_trimmed = video_utils.trim_video(local_full, _TRIM_DURATION_S)
-        local_poster = poster_service.maybe_paste(local_trimmed, video_id)
-
-        with open(local_poster, "rb") as f:
-            trimmed_data = f.read()
-
-        trimmed_gcs_uri = storage_service.upload_trimmed_video(video_id, trimmed_data)
-        logger.info("Pipeline: trimmed video uploaded for video_id=%s", video_id)
-        return trimmed_gcs_uri
-    except Exception:
-        logger.exception("Pipeline: trim failed for video_id=%s, will use raw video", video_id)
-        return None
-    finally:
-        for path in {local_full, local_trimmed, local_poster}:
-            if path:
-                try:
-                    os.unlink(path)
-                except OSError:
-                    pass
+    return await asyncio.to_thread(trim_sync, gcs_uri, video_id)
 
 
 async def _compose_video(generated_gcs_uri: str, video_id: str) -> None:
-    """Download original + generated, compose side-by-side, upload."""
+    """Compose in a thread (same code and lock as the share page)."""
     if settings.MOCK_AI:
         # In mock mode, store a mock composed URI in the cache
         mock_uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/composed.mp4"
@@ -149,28 +172,10 @@ async def _compose_video(generated_gcs_uri: str, video_id: str) -> None:
         logger.info("Pipeline MOCK: composed cache set for video_id=%s", video_id)
         return
 
-    original_path: str | None = None
-    generated_path: str | None = None
-    composed_path: str | None = None
+    from ..routers.share import compose_sync
+
     try:
-        original_gcs = f"gs://{settings.GCS_BUCKET}/uploads/{video_id}.webm"
-        original_path = storage_service.download_to_temp(original_gcs, video_id)
-        generated_path = storage_service.download_gcs_video(generated_gcs_uri)
-
-        composed_path = video_utils.compose_videos_side_by_side(original_path, generated_path)
-
-        with open(composed_path, "rb") as f:
-            composed_data = f.read()
-
-        gcs_uri = storage_service.upload_composed_video(video_id, composed_data)
-        storage_service._composed_cache[video_id] = gcs_uri
-        logger.info("Pipeline: composed video uploaded for video_id=%s", video_id)
+        await asyncio.to_thread(compose_sync, video_id, generated_gcs_uri)
+        logger.info("Pipeline: composed video ready for video_id=%s", video_id)
     except Exception:
         logger.exception("Pipeline: composition failed for video_id=%s", video_id)
-    finally:
-        for path in (original_path, generated_path, composed_path):
-            if path and os.path.exists(path):
-                try:
-                    os.unlink(path)
-                except OSError:
-                    pass
