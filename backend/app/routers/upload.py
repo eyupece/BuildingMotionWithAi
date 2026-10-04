@@ -1,5 +1,6 @@
 import logging
 import uuid
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 from ..models.schemas import UploadResponse
 from ..services import storage_service
@@ -7,6 +8,13 @@ from ..config import settings
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+def _new_id() -> str:
+    # Starts with the Turkey date and time so files sort by when they were recorded
+    # in Cloud Storage; the random tail keeps share links hard to guess.
+    now = datetime.now(timezone(timedelta(hours=3)))
+    return f"{now:%Y%m%d-%H%M%S}-{uuid.uuid4().hex[:8]}"
 
 
 def _base_url(request: Request) -> str:
@@ -26,7 +34,7 @@ async def upload_video(request: Request, file: UploadFile = File(...)):
     if not data:
         raise HTTPException(status_code=400, detail="Empty file")
 
-    video_id = str(uuid.uuid4())
+    video_id = _new_id()
     share_url = f"{_base_url(request)}/share/{video_id}"
     print(f"\n{'='*60}")
     print(f"  NEW VIDEO: {video_id}")
