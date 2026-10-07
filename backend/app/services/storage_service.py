@@ -177,6 +177,22 @@ def upload_composed_video(video_id: str, data: bytes) -> str:
     return gcs_uri
 
 
+def upload_avatar_video(video_id: str, path: str) -> str:
+    """Upload the avatar-only share video. Returns gs:// URI."""
+    gcs_uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/avatar.mp4"
+
+    if settings.MOCK_AI:
+        return gcs_uri
+
+    from google.cloud import storage as gcs
+
+    client = gcs.Client(project=settings.GOOGLE_CLOUD_PROJECT)
+    client.bucket(settings.GCS_BUCKET).blob(f"output/{video_id}/avatar.mp4").upload_from_filename(
+        path, content_type="video/mp4"
+    )
+    return gcs_uri
+
+
 def _signing_client():
     """Return a GCS client whose credentials support URL signing via IAM."""
     import google.auth

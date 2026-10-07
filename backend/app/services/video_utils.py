@@ -1,4 +1,5 @@
 import logging
+import os
 import shutil
 import subprocess
 import tempfile
@@ -141,6 +142,8 @@ def compose_videos_side_by_side(original_path: str, generated_path: str) -> str:
 
 _FONTS = "/usr/share/fonts/truetype/liberation/LiberationSans-{}.ttf"
 _W, _H = 1080, 1920
+# under the recording in the corner, empty for none
+PIP_CAPTION = "Orijinal"
 
 
 def _font(weight: str, size: int):
@@ -168,30 +171,42 @@ def _fit(w: int, h: int, box_w: int, box_h: int) -> tuple[int, int]:
 
 
 def _share_layers(main: tuple, pip: tuple, subtitle: str, folder: str) -> dict[str, str]:
-    """PNG layers for the share video: shadows under the clips, text on top, rounded masks."""
+    """PNG layers for the share video: shadows under the clips, text on top, rounded masks.
+
+    The *_solo layers are for the avatar-only video, same look without the recording.
+    """
     from PIL import Image, ImageDraw, ImageFilter
 
     mx, my, mw, mh = main
     px, py, pw, ph = pip
 
-    under = Image.new("RGBA", (_W, _H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(under)
-    d.rounded_rectangle((mx, my + 20, mx + mw, my + mh + 20), 36, fill=(0, 0, 0, 110))
-    d.rounded_rectangle((px, py + 10, px + pw, py + ph + 10), 24, fill=(0, 0, 0, 110))
-    under = under.filter(ImageFilter.GaussianBlur(30))
-    ImageDraw.Draw(under).rounded_rectangle((px - 6, py - 6, px + pw + 6, py + ph + 6), 30, fill="white")
+    def shadows(with_pip: bool):
+        img = Image.new("RGBA", (_W, _H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle((mx, my + 20, mx + mw, my + mh + 20), 36, fill=(0, 0, 0, 110))
+        if with_pip:
+            d.rounded_rectangle((px, py + 10, px + pw, py + ph + 10), 24, fill=(0, 0, 0, 110))
+        img = img.filter(ImageFilter.GaussianBlur(30))
+        if with_pip:
+            ImageDraw.Draw(img).rounded_rectangle((px - 6, py - 6, px + pw + 6, py + ph + 6), 30, fill="white")
+        return img
 
-    over = Image.new("RGBA", (_W, _H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(over)
-    d.text((_W // 2, 150), "Building Motion with AI", font=_font("Bold", 58), fill="white", anchor="mm")
-    if subtitle:
-        d.text((_W // 2, 222), subtitle, font=_font("Regular", 40), fill=(255, 255, 255, 210), anchor="mm")
-    d.text((px + pw // 2, py + ph + 40), "Ben, gerçekte", font=_font("Bold", 32), fill="white", anchor="mm")
+    def text(with_pip: bool):
+        img = Image.new("RGBA", (_W, _H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.text((_W // 2, 150), "Building Motion with AI", font=_font("Bold", 58), fill="white", anchor="mm")
+        if subtitle:
+            d.text((_W // 2, 222), subtitle, font=_font("Regular", 40), fill=(255, 255, 255, 210), anchor="mm")
+        if with_pip and PIP_CAPTION:
+            d.text((px + pw // 2, py + ph + 40), PIP_CAPTION, font=_font("Bold", 32), fill="white", anchor="mm")
+        return img
 
     paths = {}
     for name, img in (
-        ("under", under),
-        ("over", over),
+        ("under", shadows(True)),
+        ("over", text(True)),
+        ("under_solo", shadows(False)),
+        ("over_solo", text(False)),
         ("main_mask", _round_mask(mw, mh, 36)),
         ("pip_mask", _round_mask(pw, ph, 24)),
     ):
@@ -208,12 +223,13 @@ def _round_mask(w: int, h: int, r: int):
     return m
 
 
-def compose_share_video(original_path: str, generated_path: str, subtitle: str = "") -> str:
-    """The video people share: the AI clip big on a blurred copy of itself, their recording
-    small in the corner, title on top. 1080x1920 H.264 MP4, CLIP_SECONDS long.
+def compose_share_video(original_path: str, generated_path: str, subtitle: str = "") -> tuple[str, str | None]:
+    """The videos people share, both 1080x1920 H.264 MP4, CLIP_SECONDS long: the AI clip big
+    on a blurred copy of itself with their recording small in the corner, and the same
+    without the recording for "Sadece avatar".
 
-    Falls back to the plain stacked layout if this one fails. Returns a temp .mp4 path
-    the caller deletes.
+    Falls back to the plain stacked layout (and no avatar-only video) if this one fails.
+    Returns temp .mp4 paths the caller deletes.
     """
     ffmpeg = _ffmpeg_exe()
     if not ffmpeg:
@@ -222,48 +238,63 @@ def compose_share_video(original_path: str, generated_path: str, subtitle: str =
         return _compose_share(ffmpeg, original_path, generated_path, subtitle)
     except Exception:
         logger.exception("Share layout failed, using the stacked one")
-        return compose_videos_side_by_side(original_path, generated_path)
+        return compose_videos_side_by_side(original_path, generated_path), None
 
 
-def _compose_share(ffmpeg: str, original_path: str, generated_path: str, subtitle: str) -> str:
+def _compose_share(ffmpeg: str, original_path: str, generated_path: str, subtitle: str) -> tuple[str, str]:
     mw, mh = _fit(*_size(generated_path), 960, 1300)
     mx, my = (_W - mw) // 2, max(330, (_H - mh) // 2)
     pw, ph = _fit(*_size(original_path), 430, 430)
     px = _W - pw - 50
     py = min(my + mh - ph // 2, _H - ph - 180)
 
-    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-    tmp.close()
+    outs = []
+    for _ in range(2):
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+        tmp.close()
+        outs.append(tmp.name)
     with tempfile.TemporaryDirectory() as folder:
         layers = _share_layers((mx, my, mw, mh), (px, py, pw, ph), subtitle, folder)
+        # one run makes both videos, so the AI clip is decoded and blurred once.
+        # The PNG layers are read once and repeated (overlay keeps the last frame);
+        # looping them as inputs decodes every PNG on every frame, which was most of the time.
         graph = (
             "[1:v]split[g1][g2];"
-            f"[g1]scale={_W}:{_H}:force_original_aspect_ratio=increase,crop={_W}:{_H},"
-            "boxblur=40:2,eq=brightness=-0.12,format=rgba[bg];"
-            f"[g2]scale={mw}:{mh},format=rgba[m0];[4:v]format=gray[mm];[m0][mm]alphamerge[main];"
+            # blur a small copy and blow it up, same look and much cheaper than blurring at full size
+            f"[g1]scale={_W // 4}:{_H // 4}:force_original_aspect_ratio=increase,crop={_W // 4}:{_H // 4},"
+            f"boxblur=10:2,eq=brightness=-0.12,scale={_W}:{_H},format=rgba,split[bg][bg2];"
+            f"[g2]scale={mw}:{mh},format=rgba[m0];[4:v]format=gray[mm];[m0][mm]alphamerge,split[main][main2];"
             f"[0:v]scale={pw}:{ph},format=rgba[p0];[5:v]format=gray[pm];[p0][pm]alphamerge[pip];"
             "[bg][2:v]overlay=0:0[a];"
             f"[a][main]overlay={mx}:{my}[b];"
             f"[b][pip]overlay={px}:{py}[c];"
-            "[c][3:v]overlay=0:0,format=yuv420p[out]"
+            "[c][3:v]overlay=0:0,format=yuv420p[out];"
+            "[bg2][6:v]overlay=0:0[a2];"
+            f"[a2][main2]overlay={mx}:{my}[b2];"
+            "[b2][7:v]overlay=0:0,format=yuv420p[solo]"
         )
+        encode = ["-c:v", "libx264", "-crf", "23", "-preset", "veryfast", "-movflags", "+faststart", "-t", str(CLIP_SECONDS)]
         cmd = [
             ffmpeg, "-y",
             "-i", original_path,
             "-i", generated_path,
-            "-loop", "1", "-i", layers["under"],
-            "-loop", "1", "-i", layers["over"],
-            "-loop", "1", "-i", layers["main_mask"],
-            "-loop", "1", "-i", layers["pip_mask"],
+            "-i", layers["under"],
+            "-i", layers["over"],
+            "-i", layers["main_mask"],
+            "-i", layers["pip_mask"],
+            "-i", layers["under_solo"],
+            "-i", layers["over_solo"],
             "-filter_complex", graph,
-            "-map", "[out]",
-            "-c:v", "libx264", "-crf", "23", "-preset", "fast",
-            "-movflags", "+faststart",
-            "-t", str(CLIP_SECONDS),
-            tmp.name,
+            "-map", "[out]", *encode, outs[0],
+            "-map", "[solo]", *encode, outs[1],
         ]
-        subprocess.run(cmd, check=True, capture_output=True)
-    return tmp.name
+        try:
+            subprocess.run(cmd, check=True, capture_output=True)
+        except Exception:
+            for path in outs:
+                os.unlink(path)
+            raise
+    return outs[0], outs[1]
 
 
 def _parse_timestamp(timestamp: str) -> float:

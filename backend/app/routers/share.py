@@ -58,6 +58,7 @@ def compose_sync(video_id: str, trimmed_gcs_uri: str | None = None) -> str:
         original_path: str | None = None
         generated_path: str | None = None
         composed_path: str | None = None
+        avatar_path: str | None = None
         try:
             original_gcs = f"gs://{settings.GCS_BUCKET}/uploads/{video_id}.webm"
             original_path = storage_service.download_to_temp(original_gcs, video_id)
@@ -65,7 +66,9 @@ def compose_sync(video_id: str, trimmed_gcs_uri: str | None = None) -> str:
 
             key = poster_service.poster_for(video_id)
             subtitle = f"DevFest {key.split('-')[0].capitalize()}" if key else ""
-            composed_path = compose_share_video(original_path, generated_path, subtitle)
+            composed_path, avatar_path = compose_share_video(original_path, generated_path, subtitle)
+            if avatar_path:
+                storage_service.upload_avatar_video(video_id, avatar_path)
             with open(composed_path, "rb") as f:
                 composed_data = f.read()
 
@@ -78,7 +81,7 @@ def compose_sync(video_id: str, trimmed_gcs_uri: str | None = None) -> str:
             logger.error("Composition failed for video_id=%s: %s", video_id, exc)
             raise HTTPException(status_code=500, detail=f"Video composition failed: {exc}") from exc
         finally:
-            for path in (original_path, generated_path, composed_path):
+            for path in (original_path, generated_path, composed_path, avatar_path):
                 if path and os.path.exists(path):
                     try:
                         os.unlink(path)
@@ -92,13 +95,17 @@ def _get_or_compose(video_id: str) -> str:
 
 
 def _avatar_video_url(video_id: str) -> str | None:
-    """Signed URL for the AI video on its own (the bottom half of the share video)."""
-    uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/trimmed_3s.mp4"
-    try:
-        if storage_service.gcs_blob_exists(uri):
-            return storage_service.generate_video_signed_url(uri)
-    except Exception:  # noqa: BLE001
-        pass
+    """Signed URL for the AI video without the recording.
+
+    avatar.mp4 has the share video's look; older videos only have the plain clip.
+    """
+    for name in ("avatar.mp4", "trimmed_3s.mp4"):
+        uri = f"gs://{settings.GCS_BUCKET}/output/{video_id}/{name}"
+        try:
+            if storage_service.gcs_blob_exists(uri):
+                return storage_service.generate_video_signed_url(uri)
+        except Exception:  # noqa: BLE001
+            pass
     return None
 
 
