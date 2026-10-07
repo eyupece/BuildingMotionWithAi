@@ -83,7 +83,13 @@ def analyze_video_sync(gcs_uri: str) -> dict[str, Any]:
             )
             import logging
             logging.getLogger(__name__).info("Gemini model used: %s", model)
-            return json.loads(response.text)
+            analysis = json.loads(response.text)
+            # Sometimes Gemini wraps the object in a list: [{...}]
+            if isinstance(analysis, list) and analysis and isinstance(analysis[0], dict):
+                analysis = analysis[0]
+            if not isinstance(analysis, dict):
+                raise ValueError(f"Expected a JSON object, got {type(analysis).__name__}")
+            return analysis
         except Exception as exc:  # noqa: BLE001
             import logging
             logging.getLogger(__name__).warning("Gemini model %s failed: %s", model, exc)
