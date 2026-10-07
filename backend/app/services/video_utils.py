@@ -187,8 +187,6 @@ def _share_layers(main: tuple, pip: tuple, subtitle: str, folder: str) -> dict[s
     if subtitle:
         d.text((_W // 2, 222), subtitle, font=_font("Regular", 40), fill=(255, 255, 255, 210), anchor="mm")
     d.text((px + pw // 2, py + ph + 40), "Ben, gerçekte", font=_font("Bold", 32), fill="white", anchor="mm")
-    d.text((_W // 2, _H - 90), "bunu yapay zekâ ile yaptım  ·  #DevFest",
-           font=_font("Regular", 34), fill=(255, 255, 255, 200), anchor="mm")
 
     paths = {}
     for name, img in (
