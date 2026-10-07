@@ -1,3 +1,4 @@
+import logging
 import shutil
 import subprocess
 import tempfile
@@ -6,6 +7,8 @@ import threading
 import cv2
 import numpy as np  # noqa: F401  (kept for compatibility)
 
+
+logger = logging.getLogger(__name__)
 
 _locks: dict[str, threading.Lock] = {}
 _locks_guard = threading.Lock()
@@ -134,6 +137,135 @@ def compose_videos_side_by_side(original_path: str, generated_path: str) -> str:
             return tmp.name
 
     raise RuntimeError("ffmpeg not available; cannot compose videos")
+
+
+_FONTS = "/usr/share/fonts/truetype/liberation/LiberationSans-{}.ttf"
+_W, _H = 1080, 1920
+
+
+def _font(weight: str, size: int):
+    from PIL import ImageFont
+
+    try:
+        return ImageFont.truetype(_FONTS.format(weight), size)
+    except OSError:
+        return ImageFont.load_default(size)
+
+
+def _size(path: str) -> tuple[int, int]:
+    cap = cv2.VideoCapture(path)
+    w, h = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    cap.release()
+    if not w or not h:
+        raise RuntimeError(f"Cannot read video size: {path}")
+    return w, h
+
+
+def _fit(w: int, h: int, box_w: int, box_h: int) -> tuple[int, int]:
+    r = min(box_w / w, box_h / h)
+    # even sizes, libx264 needs them
+    return int(w * r) // 2 * 2, int(h * r) // 2 * 2
+
+
+def _share_layers(main: tuple, pip: tuple, subtitle: str, folder: str) -> dict[str, str]:
+    """PNG layers for the share video: shadows under the clips, text on top, rounded masks."""
+    from PIL import Image, ImageDraw, ImageFilter
+
+    mx, my, mw, mh = main
+    px, py, pw, ph = pip
+
+    under = Image.new("RGBA", (_W, _H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(under)
+    d.rounded_rectangle((mx, my + 20, mx + mw, my + mh + 20), 36, fill=(0, 0, 0, 110))
+    d.rounded_rectangle((px, py + 10, px + pw, py + ph + 10), 24, fill=(0, 0, 0, 110))
+    under = under.filter(ImageFilter.GaussianBlur(30))
+    ImageDraw.Draw(under).rounded_rectangle((px - 6, py - 6, px + pw + 6, py + ph + 6), 30, fill="white")
+
+    over = Image.new("RGBA", (_W, _H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(over)
+    d.text((_W // 2, 150), "Building Motion with AI", font=_font("Bold", 58), fill="white", anchor="mm")
+    if subtitle:
+        d.text((_W // 2, 222), subtitle, font=_font("Regular", 40), fill=(255, 255, 255, 210), anchor="mm")
+    d.text((px + pw // 2, py + ph + 40), "Ben, gerçekte", font=_font("Bold", 32), fill="white", anchor="mm")
+    d.text((_W // 2, _H - 90), "bunu yapay zekâ ile yaptım  ·  #DevFest",
+           font=_font("Regular", 34), fill=(255, 255, 255, 200), anchor="mm")
+
+    paths = {}
+    for name, img in (
+        ("under", under),
+        ("over", over),
+        ("main_mask", _round_mask(mw, mh, 36)),
+        ("pip_mask", _round_mask(pw, ph, 24)),
+    ):
+        paths[name] = f"{folder}/{name}.png"
+        img.save(paths[name])
+    return paths
+
+
+def _round_mask(w: int, h: int, r: int):
+    from PIL import Image, ImageDraw
+
+    m = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(m).rounded_rectangle((0, 0, w, h), r, fill=255)
+    return m
+
+
+def compose_share_video(original_path: str, generated_path: str, subtitle: str = "") -> str:
+    """The video people share: the AI clip big on a blurred copy of itself, their recording
+    small in the corner, title on top. 1080x1920 H.264 MP4, CLIP_SECONDS long.
+
+    Falls back to the plain stacked layout if this one fails. Returns a temp .mp4 path
+    the caller deletes.
+    """
+    ffmpeg = _ffmpeg_exe()
+    if not ffmpeg:
+        raise RuntimeError("ffmpeg not available; cannot compose videos")
+    try:
+        return _compose_share(ffmpeg, original_path, generated_path, subtitle)
+    except Exception:
+        logger.exception("Share layout failed, using the stacked one")
+        return compose_videos_side_by_side(original_path, generated_path)
+
+
+def _compose_share(ffmpeg: str, original_path: str, generated_path: str, subtitle: str) -> str:
+    mw, mh = _fit(*_size(generated_path), 960, 1300)
+    mx, my = (_W - mw) // 2, max(330, (_H - mh) // 2)
+    pw, ph = _fit(*_size(original_path), 430, 430)
+    px = _W - pw - 50
+    py = min(my + mh - ph // 2, _H - ph - 180)
+
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+    tmp.close()
+    with tempfile.TemporaryDirectory() as folder:
+        layers = _share_layers((mx, my, mw, mh), (px, py, pw, ph), subtitle, folder)
+        graph = (
+            "[1:v]split[g1][g2];"
+            f"[g1]scale={_W}:{_H}:force_original_aspect_ratio=increase,crop={_W}:{_H},"
+            "boxblur=40:2,eq=brightness=-0.12,format=rgba[bg];"
+            f"[g2]scale={mw}:{mh},format=rgba[m0];[4:v]format=gray[mm];[m0][mm]alphamerge[main];"
+            f"[0:v]scale={pw}:{ph},format=rgba[p0];[5:v]format=gray[pm];[p0][pm]alphamerge[pip];"
+            "[bg][2:v]overlay=0:0[a];"
+            f"[a][main]overlay={mx}:{my}[b];"
+            f"[b][pip]overlay={px}:{py}[c];"
+            "[c][3:v]overlay=0:0,format=yuv420p[out]"
+        )
+        cmd = [
+            ffmpeg, "-y",
+            "-i", original_path,
+            "-i", generated_path,
+            "-loop", "1", "-i", layers["under"],
+            "-loop", "1", "-i", layers["over"],
+            "-loop", "1", "-i", layers["main_mask"],
+            "-loop", "1", "-i", layers["pip_mask"],
+            "-filter_complex", graph,
+            "-map", "[out]",
+            "-c:v", "libx264", "-crf", "23", "-preset", "fast",
+            "-movflags", "+faststart",
+            "-t", str(CLIP_SECONDS),
+            tmp.name,
+        ]
+        subprocess.run(cmd, check=True, capture_output=True)
+    return tmp.name
 
 
 def _parse_timestamp(timestamp: str) -> float:

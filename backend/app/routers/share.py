@@ -8,8 +8,8 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 
 from ..config import settings
 from ..models.schemas import ShareResponse, ShareStatusResponse
-from ..services import storage_service, veo_service, video_utils
-from ..services.video_utils import compose_videos_side_by_side
+from ..services import poster_service, storage_service, veo_service, video_utils
+from ..services.video_utils import compose_share_video
 from .upload import _base_url
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ html_router = APIRouter()
 
 
 def compose_sync(video_id: str, trimmed_gcs_uri: str | None = None) -> str:
-    """Make the share video (recording on top, AI video below) once and return its GCS URI.
+    """Make the share video (AI video big, recording in the corner) once and return its GCS URI.
 
     Blocking (ffmpeg), so call it from a thread. The lock keeps the pipeline and a
     phone opening the page from composing the same video twice.
@@ -63,8 +63,9 @@ def compose_sync(video_id: str, trimmed_gcs_uri: str | None = None) -> str:
             original_path = storage_service.download_to_temp(original_gcs, video_id)
             generated_path = storage_service.download_gcs_video(trimmed_gcs_uri)
 
-            # Compose 9:16 vertical video
-            composed_path = compose_videos_side_by_side(original_path, generated_path)
+            key = poster_service.poster_for(video_id)
+            subtitle = f"DevFest {key.split('-')[0].capitalize()}" if key else ""
+            composed_path = compose_share_video(original_path, generated_path, subtitle)
             with open(composed_path, "rb") as f:
                 composed_data = f.read()
 
