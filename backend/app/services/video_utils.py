@@ -299,9 +299,9 @@ def _compose_share(ffmpeg: str, original_path: str, generated_path: str, subtitl
 
 def _parse_timestamp(timestamp: str) -> float:
     """Parse timestamp string like '0:02' or '1:05' into seconds."""
-    parts = timestamp.strip().split(":")
-    if len(parts) == 2:
-        return int(parts[0]) * 60 + float(parts[1])
+    parts = str(timestamp).strip().removesuffix("s").split(":")
+    if len(parts) >= 2:
+        return int(parts[-2]) * 60 + float(parts[-1])
     return float(parts[0])
 
 
@@ -323,7 +323,7 @@ def extract_frame(video_path: str, timestamp: str) -> bytes:
 
     try:
         seconds = _parse_timestamp(timestamp)
-    except (ValueError, IndexError):
+    except (ValueError, IndexError, TypeError):
         seconds = 2.5
 
     frame_number = int(seconds * fps)
