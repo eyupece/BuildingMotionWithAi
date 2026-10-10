@@ -91,7 +91,7 @@ async def draw_portrait(frame_bytes: bytes, key: str) -> bytes:
         f"Image 1 is a photo of a person. Image 2 is an empty part of a poster. "
         f"{poster['portrait'].format(outfit=random.choice(poster.get('outfits') or ['']))} {_KEEP}"
     )
-    response = await asyncio.to_thread(
+    response = await nb.call_with_timeout(
         nb._get_client().models.generate_content,
         model=nb._MODELS[0],
         contents=[types.Content(role="user", parts=[

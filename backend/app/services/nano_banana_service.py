@@ -20,6 +20,23 @@ _MODELS = list(dict.fromkeys(m for m in _MODELS if m))
 _client = None
 
 
+# A Nano Banana call sometimes hangs. Without a limit the request sat until Cloud Run
+# killed it after 5 minutes (504), while a second try usually finishes in ~10 s.
+_CALL_TIMEOUT_S = 60
+_CALL_TRIES = 2
+
+
+async def call_with_timeout(fn, *args, **kwargs):
+    """Run a blocking SDK call in a thread; give up after _CALL_TIMEOUT_S and try again."""
+    for attempt in range(1, _CALL_TRIES + 1):
+        try:
+            return await asyncio.wait_for(asyncio.to_thread(fn, *args, **kwargs), _CALL_TIMEOUT_S)
+        except asyncio.TimeoutError:
+            logger.warning("Nano Banana call timed out after %ds (try %d/%d)", _CALL_TIMEOUT_S, attempt, _CALL_TRIES)
+            if attempt == _CALL_TRIES:
+                raise
+
+
 def _get_client():
     """Return a cached genai.Client singleton."""
     global _client
@@ -62,7 +79,7 @@ async def generate_avatar_image(frame_bytes: bytes, style_key: str) -> bytes:
     t0 = time.perf_counter()
 
     async def _call(model: str):
-        return await asyncio.to_thread(
+        return await call_with_timeout(
             client.models.generate_content,
             model=model,
             contents=[
