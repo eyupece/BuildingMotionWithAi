@@ -99,8 +99,9 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
   const handleRetakeAfterInterrupt = useCallback(() => {
     setRecordState('preview');
     setRecordProgress(0);
+    stopCamera();
     startCamera();
-  }, [startCamera]);
+  }, [startCamera, stopCamera]);
 
   const handleNext = useCallback(() => {
     if (recordedBlob && recordedUrl) {
@@ -158,22 +159,17 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
 
       {/* Camera frame */}
       <div className="relative w-full aspect-[3/4] sm:aspect-video max-h-[62vh] rounded-3xl overflow-hidden bg-[#202124] shadow-lift ring-1 ring-black/5">
-        <AnimatePresence>
-          {recordState !== 'playback' && recordState !== 'interrupted' && (
-            <motion.video
-              key="camera"
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ transform: 'scaleX(-1)' }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
-          )}
-        </AnimatePresence>
+        {/* keep the camera video mounted, a remounted element never gets the stream back */}
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+            recordState === 'playback' || recordState === 'interrupted' ? 'opacity-0' : 'opacity-100'
+          }`}
+          style={{ transform: 'scaleX(-1)' }}
+        />
 
         <AnimatePresence>
           {recordState === 'playback' && (
@@ -264,7 +260,9 @@ export function RecordScreen({ onComplete, onBack }: RecordScreenProps) {
 
           {recordState === 'recording' && (
             <ProgressRing progress={recordProgress} size={84} strokeWidth={5} color="#EA4335">
-              <div className="w-9 h-9 rounded-lg bg-google-red" />
+              <span className="text-2xl font-bold text-google-red tabular-nums">
+                {Math.max(1, Math.ceil((1 - recordProgress) * (RECORD_DURATION / 1000)))}
+              </span>
             </ProgressRing>
           )}
 
