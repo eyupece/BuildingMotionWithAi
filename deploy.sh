@@ -6,6 +6,7 @@
 #   ./deploy.sh trabzon backend only the backend
 #   ./deploy.sh none            original codelab look, no event
 #   ./deploy.sh trabzon etkinlik  event day: backend CPU stays on all day (about $2/day)
+#   VIDEO_LIMIT=40 ./deploy.sh trabzon backend   videos per day (default 30, 0 = no limit)
 #
 # A plain deploy turns CPU throttling back on, so run it again after the event.
 set -e
@@ -36,7 +37,7 @@ if [ "$ONLY" != "frontend" ]; then
   (cd backend && gcloud run deploy gemini-motion-lab-backend --source . --region "$REGION" \
     --allow-unauthenticated --min-instances 1 --max-instances 1 --cpu 2 --memory 2Gi --port 8080 $CPU \
     --project "$GOOGLE_CLOUD_PROJECT" --quiet \
-    --set-env-vars "GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GCS_BUCKET=$GCS_BUCKET,GCS_SIGNING_SA=$GCS_SIGNING_SA,GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI,MOCK_AI=$MOCK_AI,PUBLIC_BASE_URL=${BACKEND_URL:-$PUBLIC_BASE_URL}")
+    --set-env-vars "GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,GCS_BUCKET=$GCS_BUCKET,GCS_SIGNING_SA=$GCS_SIGNING_SA,GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI,MOCK_AI=$MOCK_AI,PUBLIC_BASE_URL=${BACKEND_URL:-$PUBLIC_BASE_URL},VIDEO_LIMIT=${VIDEO_LIMIT:-30}")
 
   # recordings and videos are deleted after 14 days
   echo '{"rule":[{"action":{"type":"Delete"},"condition":{"age":14}}]}' > /tmp/lifecycle.json

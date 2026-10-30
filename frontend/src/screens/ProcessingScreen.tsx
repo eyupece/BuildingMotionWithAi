@@ -37,6 +37,7 @@ export function ProcessingScreen({
   recordedBlob,
 }: ProcessingScreenProps) {
   const [phase, setPhase] = useState<Phase>('analyzing');
+  const [limitHit, setLimitHit] = useState(false);
   const [analysisLines, setAnalysisLines] = useState<string[]>([]);
   const [avatarImageUrl, setAvatarImageUrl] = useState<string | null>(null);
   const [showAvatar, setShowAvatar] = useState(false);
@@ -77,7 +78,9 @@ export function ProcessingScreen({
         } catch (err) {
           // Upload or analysis failed — surface the error
           if (!cancelled) {
-            setFatalErrorMessage(err instanceof Error ? err.message : null);
+            const msg = err instanceof Error ? err.message : null;
+          setLimitHit(!!msg?.includes('limit_reached'));
+          setFatalErrorMessage(msg);
             setFatalError(true);
           }
           return;
@@ -185,7 +188,9 @@ export function ProcessingScreen({
         // generateVideo() itself failed
         clearInterval(tipInterval);
         if (!cancelled) {
-          setFatalErrorMessage(err instanceof Error ? err.message : null);
+          const msg = err instanceof Error ? err.message : null;
+          setLimitHit(!!msg?.includes('limit_reached'));
+          setFatalErrorMessage(msg);
           setAllApiFailed(!apiSucceeded);
           setFatalError(true);
         }
@@ -219,16 +224,25 @@ export function ProcessingScreen({
           <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#EA4335]/10 text-google-red">
             <SparkIcon className="w-9 h-9" />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-ink">Bir şeyler ters gitti</h2>
-          <p className="text-muted text-lg">Şu an yapay zeka servislerine bağlanamadık.</p>
-          {fatalErrorMessage && (
+          {limitHit ? (
+            <>
+              <h2 className="text-3xl sm:text-4xl font-bold text-ink">Bugünlük bu kadar</h2>
+              <p className="text-muted text-lg">Bugün için ayırdığımız videolar bitti. İlgin için çok teşekkürler!</p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-3xl sm:text-4xl font-bold text-ink">Bir şeyler ters gitti</h2>
+              <p className="text-muted text-lg">Şu an yapay zeka servislerine bağlanamadık.</p>
+            </>
+          )}
+          {fatalErrorMessage && !limitHit && (
             <p className="text-google-red text-xs font-mono w-full break-all px-3 py-2 rounded-xl bg-[#EA4335]/10">
               {fatalErrorMessage}
             </p>
           )}
           <div className="flex flex-col gap-3 w-full mt-2">
             <button onClick={onError} className="btn-primary w-full">
-              <RetryIcon className="w-5 h-5" /> Tekrar dene
+              <RetryIcon className="w-5 h-5" /> {limitHit ? 'Başa dön' : 'Tekrar dene'}
             </button>
             {allApiFailed && DEMOS.length > 0 && (
               <button onClick={onDemo} className="btn-secondary w-full">Demo izle</button>

@@ -1,12 +1,15 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { API_BASE } from '../hooks/useApi';
+import { DEMOS } from './DemoScreen';
 
 interface QueueFullScreenProps {
   onReady: () => void;
+  onDemo: () => void;
 }
 
-export function QueueFullScreen({ onReady }: QueueFullScreenProps) {
+export function QueueFullScreen({ onReady, onDemo }: QueueFullScreenProps) {
+  const [limitReached, setLimitReached] = useState(false);
   const [activeJobs, setActiveJobs] = useState(0);
   const [maxJobs, setMaxJobs] = useState(3);
   const cancelledRef = useRef(false);
@@ -22,6 +25,7 @@ export function QueueFullScreen({ onReady }: QueueFullScreenProps) {
             const data = await res.json();
             setActiveJobs(data.active_jobs);
             setMaxJobs(data.max_jobs);
+            setLimitReached(!!data.limit_reached);
             if (data.available) {
               onReady();
               return;
@@ -39,6 +43,28 @@ export function QueueFullScreen({ onReady }: QueueFullScreenProps) {
       cancelledRef.current = true;
     };
   }, [onReady]);
+
+  if (limitReached) {
+    return (
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-8">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="card flex flex-col items-center gap-5 px-6 sm:px-12 py-10 text-center max-w-lg w-full"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold text-ink">Bugünlük bu kadar</h2>
+          <p className="text-muted text-lg">
+            Bugün için ayırdığımız videolar bitti. İlgin için çok teşekkürler!
+            Kod GitHub'da, kendi projende deneyebilirsin.
+          </p>
+          {DEMOS.length > 0 && (
+            <button onClick={onDemo} className="btn-primary w-full mt-2">Demo izle</button>
+          )}
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-8">

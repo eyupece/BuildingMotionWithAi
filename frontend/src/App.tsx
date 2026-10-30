@@ -203,7 +203,18 @@ export default function App() {
   handleResetRef.current = handleReset;
 
   // ── Navigation helpers ───────────────────────────────────────────────────────
-  const handleStart = useCallback(() => {
+  const handleStart = useCallback(async () => {
+    // Stop before recording if today's videos are used up
+    try {
+      const res = await fetch(`${API_BASE}/api/queue/status`);
+      if (res.ok && (await res.json()).limit_reached) {
+        setTransitionType('fadeScale');
+        dispatch({ type: 'GO_TO', screen: 'queueFull' });
+        return;
+      }
+    } catch {
+      // Network error — let them record anyway
+    }
     setTransitionType('slideUp');
     dispatch({ type: 'GO_TO', screen: 'record' });
   }, []);
@@ -390,10 +401,13 @@ export default function App() {
             )}
 
             {state.currentScreen === 'queueFull' && (
-              <QueueFullScreen onReady={() => {
-                setTransitionType('fadeOut');
-                dispatch({ type: 'RESET' });
-              }} />
+              <QueueFullScreen
+                onReady={() => {
+                  setTransitionType('fadeOut');
+                  dispatch({ type: 'RESET' });
+                }}
+                onDemo={handleGoToDemo}
+              />
             )}
           </motion.div>
         </AnimatePresence>

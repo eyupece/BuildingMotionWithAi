@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     MOCK_AI: bool = False
     NANO_BANANA_MODEL: str = ""
     PUBLIC_BASE_URL: str = "http://localhost:8000"
+    VIDEO_LIMIT: int = 30  # Veo videos per day, 0 = no limit
 
 
 settings = Settings()
